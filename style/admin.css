@@ -1,0 +1,132 @@
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #14141f 0%, #1e1e2f 100%);
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+header {
+  background: #1e1e2f;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.auth a {
+  color: #ccc;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 500;
+}
+
+.auth a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+nav {
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+nav a {
+  color: #ccc;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: background 0.3s, color 0.3s;
+}
+
+nav a:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+h2 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 600;
+  color: #fff;
+}
+
+.admin-section {
+  margin-bottom: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-section h3 {
+  font-size: 24px;
+  color: #6366f1;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #ccc;
+}
+
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .auth {
+    margin-top: 10px;
+  }
+
+  table, th, td {
+    font-size: 14px;
+  }
+}
