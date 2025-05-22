@@ -1,62 +1,66 @@
-# README.md
+# 📰 luXew App – Plateforme d’Actualités MVC
 
-# News App
+## 📌 Description
 
-## Description
-This project is a web application that implements a news platform using the MVC (Model-View-Controller) architecture. It allows users to create, edit, and view articles, as well as manage comments and user authentication.
+**luXew** est une application web construite selon l’architecture **MVC (Modèle-Vue-Contrôleur)**.  
+Elle permet aux utilisateurs de :
 
-## Features
-- User authentication (login and registration)
-- Article management (create, edit, view, and list articles)
-- Comment management (add and view comments)
-- Responsive design with CSS
+- 🔐 S’inscrire et se connecter
+- ✍️ Créer, modifier et supprimer des articles
+- 💬 Commenter les articles
+- 🧭 Naviguer dans une interface responsive claire et moderne
 
-## Project Structure
-```
+---
+
+## ⚙️ Fonctionnalités Principales
+
+- ✅ Authentification des utilisateurs (inscription / connexion)
+- 📝 Gestion complète des articles (CRUD)
+- 💬 Gestion des commentaires
+- 📱 Interface responsive en CSS
+- 🧱 Architecture propre et modulaire en MVC
+
+---
+
+## 🗂️ Structure du Projet
+```bash
 news-app
 ├── config
-│   └── database.php          # Database connection settings
+│ └── database.php # Paramètres de connexion à la base de données
 ├── controllers
-│   ├── ArticleController.php  # Handles article-related requests
-│   ├── AuthController.php     # Manages user authentication
-│   ├── CommentController.php   # Handles comment-related requests
-│   └── UserController.php      # Manages user-related actions
+│ ├── ArticleController.php # Gère les articles
+│ ├── AuthController.php # Gère l’authentification
+│ ├── CommentController.php # Gère les commentaires
+│ └── UserController.php # Gère les utilisateurs
 ├── models
-│   ├── Article.php            # Interacts with the articles table
-│   ├── Comment.php            # Interacts with the comments table
-│   ├── Reaction.php           # Interacts with the reactions table
-│   └── User.php               # Interacts with the users table
+│ ├── Article.php # Modèle pour la table Article
+│ ├── Comment.php # Modèle pour les Commentaires
+│ ├── Reaction.php # Modèle pour les Réactions
+│ └── User.php # Modèle pour les Utilisateurs
 ├── views
-│   ├── articles
-│   │   ├── create.php         # Form for creating a new article
-│   │   ├── edit.php           # Form for editing an existing article
-│   │   ├── index.php          # Displays a list of articles
-│   │   └── show.php           # Displays a single article's details
-│   ├── auth
-│   │   ├── login.php          # Form for user login
-│   │   └── register.php       # Form for user registration
-│   └── layouts
-│       └── main.php           # Main layout including header and footer
+│ ├── articles
+│ │ ├── create.php # Formulaire de création
+│ │ ├── edit.php # Formulaire d’édition
+│ │ ├── index.php # Liste des articles
+│ │ └── show.php # Détail d’un article
+│ ├── auth
+│ │ ├── login.php # Formulaire de connexion
+│ │ └── register.php # Formulaire d’inscription
+│ └── layouts
+│ └── main.php # Layout global (header/footer)
 ├── public
-│   ├── css
-│   │   └── style.css          # CSS styles for the application
-│   ├── js
-│   │   └── main.js            # JavaScript code for the application
-│   └── index.php              # Entry point for the application
-├── .htaccess                  # Configuration for URL rewriting
-└── README.md                  # Documentation for the project
+│ ├── css
+│ │ └── style.css # Styles personnalisés
+│ ├── js
+│ │ └── main.js # Scripts JavaScript
+│ └── index.php # Point d’entrée principal
+├── .htaccess # Réécriture d’URL Apache
+└── README.md # Documentation du projet
 ```
+---
 
-## Installation
-1. Clone the repository.
-2. Set up the database using the provided SQL dump.
-3. Configure the database connection in `config/database.php`.
-4. Run the application on a local server.
+## 🚀 Installation
 
-## Usage
-- Access the application through the public/index.php file.
-- Use the provided forms for user registration and login.
-- Manage articles and comments through the respective views.
-
-## License
-This project is licensed under the MIT License.
+1. **Cloner** le dépôt :
+   ```bash
+   git clone https://github.com/Atinkene/luXew.git
