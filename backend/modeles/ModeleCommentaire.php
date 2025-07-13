@@ -1,122 +1,100 @@
 <?php
-require_once '../config/database.php';
+require_once '../config/BaseDeDonnees.php';
 
-class Comment {
+class ModeleCommentaire {
     private $db;
-    private $id;
-    private $contenu;
-    private $utilisateur_id;
-    private $article_id;
-    private $parent_id;
-    private $dateCreation;
 
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = BaseDeDonnees::obtenirInstance()->obtenirConnexion();
     }
 
-    public function getId() { return $this->id; }
-    public function getContenu() { return $this->contenu; }
-    public function getUtilisateurId() { return $this->utilisateur_id; }
-    public function getArticleId() { return $this->article_id; }
-    public function getParentId() { return $this->parent_id; }
-    public function getDateCreation() { return $this->dateCreation; }
-
-    public function setContenu($contenu) { $this->contenu = $contenu; }
-    public function setUtilisateurId($utilisateur_id) { $this->utilisateur_id = $utilisateur_id; }
-    public function setArticleId($article_id) { $this->article_id = $article_id; }
-    public function setParentId($parent_id) { $this->parent_id = $parent_id; }
-
-    public function createComment($data) {
-        $query = "INSERT INTO Commentaire (contenu, utilisateur_id, article_id, parent_id) 
-                 VALUES (:contenu, :utilisateur_id, :article_id, :parent_id)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':contenu', $data['contenu'], PDO::PARAM_STR);
-        $stmt->bindParam(':utilisateur_id', $data['utilisateur_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':article_id', $data['article_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':parent_id', $data['parent_id'], PDO::PARAM_INT);
-        
-        if ($stmt->execute()) {
-            return $this->db->lastInsertId();
+    public function obtenirCommentairesParArticle($articleId) {
+        try {
+            $query = "SELECT c.*, u.pseudo as auteurPseudo 
+                      FROM Commentaire c 
+                      LEFT JOIN Utilisateur u ON c.utilisateurId = u.id 
+                      WHERE c.articleId = :articleId AND c.parentId IS NULL 
+                      ORDER BY c.dateCreation ASC";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+            $commentaires = $stmt->fetchAll();
+            foreach ($commentaires as &$commentaire) {
+                $commentaire['sousCommentaires'] = $this->obtenirSousCommentaires($commentaire['id']);
+            }
+            return $commentaires;
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération des commentaires : " . $e->getMessage());
         }
-        return false;
     }
 
-    public function getCommentById($id) {
-        $query = "SELECT c.*, u.pseudo as auteur_pseudo 
-                 FROM Commentaire c 
-                 LEFT JOIN Utilisateur u ON c.utilisateur_id = u.id 
-                 WHERE c.id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    private function obtenirSousCommentaires($parentId) {
+        try {
+            $query = "SELECT c.*, u.pseudo as auteurPseudo 
+                      FROM Commentaire c 
+                      LEFT JOIN Utilisateur u ON c.utilisateurId = u.id 
+                      WHERE c.parentId = :parentId 
+                      ORDER BY c.dateCreation ASC";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':parentId', $parentId, PDO::PARAM_INT);
+            $stmt->execute();
+            $sousCommentaires = $stmt->fetchAll();
+            foreach ($sousCommentaires as &$sousCommentaire) {
+                $sousCommentaire['sousCommentaires'] = $this->obtenirSousCommentaires($sousCommentaire['id']);
+            }
+            return $sousCommentaires;
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération des sous-commentaires : " . $e->getMessage());
+        }
     }
 
-    public function updateComment($id, $contenu) {
-        $query = "UPDATE Commentaire SET contenu = :contenu WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':contenu', $contenu, PDO::PARAM_STR);
-        return $stmt->execute();
+    public function ajouterCommentaire($donnees) {
+        try {
+            if (isset($donnees['parentId']) && $donnees['parentId']) {
+                $query = "SELECT id FROM Commentaire WHERE id = :parentId AND articleId = :articleId";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':parentId', $donnees['parentId'], PDO::PARAM_INT);
+                $stmt->bindParam(':articleId', $donnees['articleId'], PDO::PARAM_INT);
+                $stmt->execute();
+                if (!$stmt->fetch()) {
+                    throw new Exception("Commentaire parent invalide ou n'appartient pas à l'article");
+                }
+            }
+            $query = "INSERT INTO Commentaire (contenu, utilisateurId, articleId, parentId) 
+                      VALUES (:contenu, :utilisateurId, :articleId, :parentId)";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':contenu', $donnees['contenu'], PDO::PARAM_STR);
+            $stmt->bindParam(':utilisateurId', $donnees['utilisateurId'], PDO::PARAM_INT);
+            $stmt->bindParam(':articleId', $donnees['articleId'], PDO::PARAM_INT);
+            $stmt->bindParam(':parentId', $donnees['parentId'], PDO::PARAM_INT, $donnees['parentId'] ?? null);
+            $stmt->execute();
+            return $this->db->lastInsertId();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de l'ajout du commentaire : " . $e->getMessage());
+        }
     }
 
-    public function deleteComment($id) {
-        $this->deleteCommentReactions($id);
-        
-        $this->deleteCommentReplies($id);
-        
-        $query = "DELETE FROM Commentaire WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+    public function modifierCommentaire($commentaireId, $donnees) {
+        try {
+            $query = "UPDATE Commentaire SET contenu = :contenu WHERE id = :commentaireId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':contenu', $donnees['contenu'], PDO::PARAM_STR);
+            $stmt->bindParam(':commentaireId', $commentaireId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la modification du commentaire : " . $e->getMessage());
+        }
     }
 
-    public function getReplies($commentId) {
-        $query = "SELECT c.*, u.pseudo as auteur_pseudo 
-                 FROM Commentaire c 
-                 LEFT JOIN Utilisateur u ON c.utilisateur_id = u.id 
-                 WHERE c.parent_id = :parent_id 
-                 ORDER BY c.dateCreation ASC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':parent_id', $commentId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    private function deleteCommentReplies($commentId) {
-        $query = "DELETE FROM Commentaire WHERE parent_id = :parent_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':parent_id', $commentId, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
-    public function getCommentReactions($commentId) {
-        $query = "SELECT r.*, u.pseudo as utilisateur_pseudo 
-                 FROM Reaction r 
-                 LEFT JOIN Utilisateur u ON r.utilisateur_id = u.id 
-                 WHERE r.commentaire_id = :commentaire_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':commentaire_id', $commentId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    private function deleteCommentReactions($commentId) {
-        $query = "DELETE FROM Reaction WHERE commentaire_id = :commentaire_id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':commentaire_id', $commentId, PDO::PARAM_INT);
-        return $stmt->execute();
-    }
-
-    public function getUserComments($userId) {
-        $query = "SELECT c.*, a.titre as article_titre 
-                 FROM Commentaire c 
-                 LEFT JOIN Article a ON c.article_id = a.id 
-                 WHERE c.utilisateur_id = :utilisateur_id 
-                 ORDER BY c.dateCreation DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':utilisateur_id', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function supprimerCommentaire($commentaireId) {
+        try {
+            $query = "DELETE FROM Commentaire WHERE id = :commentaireId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':commentaireId', $commentaireId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression du commentaire : " . $e->getMessage());
+        }
     }
 }
+?>

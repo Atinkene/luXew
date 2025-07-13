@@ -1,122 +1,87 @@
 <?php
-require_once '../models/User.php';
+require_once '../modeles/ModeleUtilisateur.php';
 
-class AuthController {
-    private $userModel;
+class ControleurAuthentification {
+    private $modeleUtilisateur;
 
     public function __construct() {
-        $this->userModel = new User();
+        $this->modeleUtilisateur = new ModeleUtilisateur();
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
 
-    public function login() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    public function connecter() {
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Méthode non autorisée');
+            }
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = $_POST['password'] ?? '';
-
-            if (empty($email) || empty($password)) {
-                header('Location: http://localhost/luXew/news-app/public/login?error=missing_fields');
-                exit();
+            $motDePasse = filter_input(INPUT_POST, 'motDePasse', FILTER_SANITIZE_SPECIAL_CHARS);
+            if (empty($email) || empty($motDePasse)) {
+                throw new Exception('Email ou mot de passe manquant');
             }
 
-            $user = $this->userModel->getUserByEmail($email);
-
-            if ($user && password_verify($password, $user['mot_de_passe'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_pseudo'] = $user['pseudo'];
-                
-                $roles = $this->userModel->getUserRoles($user['id']);
-                $_SESSION['user_roles'] = $roles;
-                
-                header('Location: index.php?success=login');
-                exit();
-            } else {
-                header('Location: http://localhost/luXew/news-app/public/login?error=invalid_credentials');
-                exit();
+            $utilisateur = $this->modeleUtilisateur->obtenirUtilisateurParEmail($email);
+            if (!$utilisateur || !password_verify($motDePasse, $utilisateur['motDePasse'])) {
+                throw new Exception('Identifiants invalides');
             }
+
+            $_SESSION['utilisateurId'] = $utilisateur['id'];
+            $_SESSION['rolesUtilisateur'] = $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']);
+            $this->repondreJson([
+                'succes' => true,
+                'utilisateurId' => $utilisateur['id'],
+                'pseudo' => $utilisateur['pseudo'],
+                'roles' => $_SESSION['rolesUtilisateur']
+            ]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 401);
         }
-
-        require_once '../views/auth/login.php';
     }
 
-    public function register() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $pseudo = filter_input(INPUT_POST, 'pseudo', FILTER_SANITIZE_STRING);
+    public function deconnecter() {
+        try {
+            session_destroy();
+            $this->repondreJson(['succes' => true]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 400);
+        }
+    }
+
+    public function inscrire() {
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Méthode non autorisée');
+            }
+            $pseudo = filter_input(INPUT_POST, 'pseudo', FILTER_SANITIZE_SPECIAL_CHARS);
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = $_POST['password'] ?? '';
-            $confirmPassword = $_POST['confirm_password'] ?? '';
-
-            if (empty($pseudo) || empty($email) || empty($password)) {
-                header('Location: http://localhost/luXew/news-app/public/register?error=missing_fields');
-                exit();
+            $motDePasse = filter_input(INPUT_POST, 'motDePasse', FILTER_SANITIZE_SPECIAL_CHARS);
+            if (empty($pseudo) || empty($email) || empty($motDePasse)) {
+                throw new Exception('Champs manquants');
             }
-
-            if ($password !== $confirmPassword) {
-                header('Location: http://localhost/luXew/news-app/public/register?error=password_mismatch');
-                exit();
+            if ($this->modeleUtilisateur->obtenirUtilisateurParEmail($email)) {
+                throw new Exception('Email déjà utilisé');
             }
-
-            if ($this->userModel->getUserByEmail($email)) {
-                header('Location: http://localhost/luXew/news-app/public/register?error=email_exists');
-                exit();
-            }
-
-            if ($this->userModel->getUserByPseudo($pseudo)) {
-                header('Location: http://localhost/luXew/news-app/public/register?error=pseudo_exists');
-                exit();
-            }
-
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            $userData = [
+            $motDePasseHache = password_hash($motDePasse, PASSWORD_DEFAULT);
+            $utilisateurId = $this->modeleUtilisateur->creerUtilisateur([
                 'pseudo' => $pseudo,
                 'email' => $email,
-                'mot_de_passe' => $hashedPassword
-            ];
-
-            if ($this->userModel->createUser($userData)) {
-                header('Location: login.php?success=registration');
-                exit();
-            } else {
-                header('Location: http://localhost/luXew/news-app/public/register?error=registration_failed');
-                exit();
-            }
+                'motDePasse' => $motDePasseHache
+            ]);
+            $_SESSION['utilisateurId'] = $utilisateurId;
+            $_SESSION['rolesUtilisateur'] = ['visiteur'];
+            $this->repondreJson(['succes' => true, 'utilisateurId' => $utilisateurId]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 400);
         }
-
-        require_once '../views/auth/register.php';
     }
 
-    public function logout() {
-        session_start();
-        session_destroy();
-        
-        header('Location: login.php?success=logout');
-        exit();
-    }
-
-    public function forgotPassword() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-
-            if (empty($email)) {
-                header('Location: forgot-password.php?error=missing_email');
-                exit();
-            }
-
-            $token = bin2hex(random_bytes(32));
-            
-            if ($this->userModel->setResetToken($email, $token)) {
-
-                header('Location: forgot-password.php?success=reset_sent');
-                exit();
-            } else {
-                header('Location: forgot-password.php?error=invalid_email');
-                exit();
-            }
-        }
-
-        require_once '../views/auth/forgot-password.php';
+    private function repondreJson($donnees, $codeStatut = 200) {
+        http_response_code($codeStatut);
+        header('Content-Type: application/json');
+        echo json_encode($donnees);
+        exit;
     }
 }
+?>
