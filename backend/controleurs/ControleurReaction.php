@@ -6,36 +6,49 @@ class ControleurReaction {
 
     public function __construct() {
         $this->modeleReaction = new ModeleReaction();
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
     }
 
     public function ajouterReaction() {
         try {
-            if (!isset($_SESSION['utilisateurId'])) {
+            if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
+            
+            $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_SPECIAL_CHARS);
             $articleId = filter_input(INPUT_POST, 'articleId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-            $commentaireId = filter_input(INPUT_POST, 'commentaireId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            $commentaireId = filter_input(INPUT_POST, 'commentaireId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?: null;
 
-            if (!in_array($type, ['aimer', 'nePasAimer']) || (!$articleId && !$commentaireId)) {
+            if (!in_array($type, ['like', 'unlike']) || (!$articleId && !$commentaireId)) {
                 throw new Exception('Type ou cible invalide');
             }
 
-            $donnees = [
-                'utilisateurId' => $_SESSION['utilisateurId'],
-                'articleId' => $articleId,
-                'commentaireId' => $commentaireId,
-                'type' => $type
-            ];
+            $reactionExistante = $this->modeleReaction->obtenirReactionUtilisateur(
+                $_SERVER['utilisateurId'], 
+                $articleId, 
+                $commentaireId
+            );
 
-            $reactionId = $this->modeleReaction->ajouterReaction($donnees);
-            $this->repondreJson(['succes' => true, 'reactionId' => $reactionId]);
+            if ($reactionExistante) {
+                if ($reactionExistante['type'] === $type) {
+                    $this->modeleReaction->supprimerReaction($reactionExistante['id']);
+                    $this->repondreJson(['succes' => true, 'action' => 'supprimee']);
+                } else {
+                    $this->modeleReaction->modifierReaction($reactionExistante['id'], $type);
+                    $this->repondreJson(['succes' => true, 'action' => 'modifiee']);
+                }
+            } else {
+                $donnees = [
+                    'utilisateurId' => $_SERVER['utilisateurId'],
+                    'articleId' => $articleId,
+                    'commentaireId' => $commentaireId,
+                    'type' => $type
+                ];
+                $reactionId = $this->modeleReaction->ajouterReaction($donnees);
+                $this->repondreJson(['succes' => true, 'reactionId' => $reactionId, 'action' => 'ajoutee']);
+            }
         } catch (Exception $e) {
             $this->repondreJson(['erreur' => $e->getMessage()], 400);
         }
@@ -43,12 +56,17 @@ class ControleurReaction {
 
     public function supprimerReaction($reactionId) {
         try {
-            if (!isset($_SESSION['utilisateurId'])) {
+            if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
                 throw new Exception('Méthode non autorisée');
             }
+            
+            if (!$this->peutSupprimerReaction($reactionId, $_SERVER['utilisateurId'])) {
+                throw new Exception('Vous ne pouvez supprimer que vos propres réactions');
+            }
+            
             $this->modeleReaction->supprimerReaction($reactionId);
             $this->repondreJson(['succes' => true]);
         } catch (Exception $e) {
@@ -76,6 +94,44 @@ class ControleurReaction {
         } catch (Exception $e) {
             $this->repondreJson(['erreur' => $e->getMessage()], 400);
         }
+    }
+
+    public function obtenirReactionUtilisateur($articleId = null, $commentaireId = null) {
+        try {
+            if (!isset($_SERVER['utilisateurId'])) {
+                throw new Exception('Non autorisé');
+            }
+            
+            if ($articleId && !filter_var($articleId, FILTER_VALIDATE_INT)) {
+                throw new Exception('ID d\'article invalide');
+            }
+            if ($commentaireId && !filter_var($commentaireId, FILTER_VALIDATE_INT)) {
+                throw new Exception('ID de commentaire invalide');
+            }
+            if (!$articleId && !$commentaireId) {
+                throw new Exception('Cible manquante');
+            }
+
+            $reaction = $this->modeleReaction->obtenirReactionUtilisateur(
+                $_SERVER['utilisateurId'], 
+                $articleId, 
+                $commentaireId
+            );
+
+            $this->repondreJson(['reaction' => $reaction]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 400);
+        }
+    }
+
+    private function peutSupprimerReaction($reactionId, $utilisateurId) {
+        return $this->modeleReaction->verifierProprietaire($reactionId, $utilisateurId) || 
+               $this->aPermissionAdmin();
+    }
+
+    private function aPermissionAdmin() {
+        return isset($_SERVER['roles']) && 
+               in_array('admin', $_SERVER['roles']);
     }
 
     private function repondreJson($donnees, $codeStatut = 200) {

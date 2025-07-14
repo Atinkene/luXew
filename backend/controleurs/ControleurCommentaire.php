@@ -9,9 +9,6 @@ class ControleurCommentaire {
     public function __construct() {
         $this->modeleCommentaire = new ModeleCommentaire();
         $this->modeleReaction = new ModeleReaction();
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
     }
 
     public function obtenirCommentaires($articleId) {
@@ -31,15 +28,15 @@ class ControleurCommentaire {
 
     public function ajouterCommentaire() {
         try {
-            if (!isset($_SESSION['utilisateurId'])) {
+            if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            $contenu = filter_input(INPUT_POST, 'contenu', FILTER_SANITIZE_STRING);
+            $contenu = filter_input(INPUT_POST, 'contenu', FILTER_SANITIZE_SPECIAL_CHARS);
             $articleId = filter_input(INPUT_POST, 'articleId', FILTER_VALIDATE_INT);
-            $parentId = filter_input(INPUT_POST, 'parentId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+            $parentId = filter_input(INPUT_POST, 'parentId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?: null;
 
             if (empty($contenu) || !$articleId) {
                 throw new Exception('Contenu ou ID d\'article manquant');
@@ -47,7 +44,7 @@ class ControleurCommentaire {
 
             $donnees = [
                 'contenu' => $contenu,
-                'utilisateurId' => $_SESSION['utilisateurId'],
+                'utilisateurId' => $_SERVER['utilisateurId'],
                 'articleId' => $articleId,
                 'parentId' => $parentId
             ];
@@ -61,16 +58,22 @@ class ControleurCommentaire {
 
     public function modifierCommentaire($commentaireId) {
         try {
-            if (!isset($_SESSION['utilisateurId'])) {
+            if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            $contenu = filter_input(INPUT_POST, 'contenu', FILTER_SANITIZE_STRING);
+            
+            if (!$this->peutModifierCommentaire($commentaireId, $_SERVER['utilisateurId'])) {
+                throw new Exception('Vous ne pouvez modifier que vos propres commentaires');
+            }
+            
+            $contenu = filter_input(INPUT_POST, 'contenu', FILTER_SANITIZE_SPECIAL_CHARS);
             if (empty($contenu)) {
                 throw new Exception('Contenu manquant');
             }
+            
             $this->modeleCommentaire->modifierCommentaire($commentaireId, ['contenu' => $contenu]);
             $this->repondreJson(['succes' => true]);
         } catch (Exception $e) {
@@ -80,12 +83,17 @@ class ControleurCommentaire {
 
     public function supprimerCommentaire($commentaireId) {
         try {
-            if (!isset($_SESSION['utilisateurId']) || !$this->aPermission()) {
+            if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
                 throw new Exception('Méthode non autorisée');
             }
+            
+            if (!$this->peutSupprimerCommentaire($commentaireId, $_SERVER['utilisateurId'])) {
+                throw new Exception('Vous ne pouvez supprimer que vos propres commentaires');
+            }
+            
             $this->modeleCommentaire->supprimerCommentaire($commentaireId);
             $this->repondreJson(['succes' => true]);
         } catch (Exception $e) {
@@ -93,9 +101,18 @@ class ControleurCommentaire {
         }
     }
 
-    private function aPermission() {
-        return isset($_SESSION['rolesUtilisateur']) && 
-               in_array('admin', $_SESSION['rolesUtilisateur']);
+    private function peutModifierCommentaire($commentaireId, $utilisateurId) {
+        return $this->modeleCommentaire->verifierProprietaire($commentaireId, $utilisateurId);
+    }
+
+    private function peutSupprimerCommentaire($commentaireId, $utilisateurId) {
+        return $this->modeleCommentaire->verifierProprietaire($commentaireId, $utilisateurId) || 
+               $this->aPermissionAdmin();
+    }
+
+    private function aPermissionAdmin() {
+        return isset($_SERVER['roles']) && 
+               in_array('admin', $_SERVER['roles']);
     }
 
     private function repondreJson($donnees, $codeStatut = 200) {

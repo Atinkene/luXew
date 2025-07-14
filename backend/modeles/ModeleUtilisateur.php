@@ -8,13 +8,27 @@ class ModeleUtilisateur {
         $this->db = BaseDeDonnees::obtenirInstance()->obtenirConnexion();
     }
 
-    public function obtenirUtilisateurParEmail($email) {
+    public function obtenirUtilisateurParPseudo($pseudo) {
         try {
-            $query = "SELECT * FROM Utilisateur WHERE email = :email";
+            $query = "SELECT * FROM Utilisateur WHERE pseudo = :pseudo";
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':pseudo', $pseudo, PDO::PARAM_STR);
             $stmt->execute();
-            return $stmt->fetch();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: false; // Return false if no user found
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
+    public function obtenirUtilisateurParId($id) {
+        try {
+            $query = "SELECT * FROM Utilisateur WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: false; // Return false if no user found
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
         }
@@ -25,7 +39,7 @@ class ModeleUtilisateur {
             $query = "SELECT id, pseudo, email FROM Utilisateur";
             $stmt = $this->db->prepare($query);
             $stmt->execute();
-            return $stmt->fetchAll();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la récupération des utilisateurs : " . $e->getMessage());
         }
@@ -39,27 +53,29 @@ class ModeleUtilisateur {
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':utilisateurId', $utilisateurId, PDO::PARAM_INT);
             $stmt->execute();
-            return array_column($stmt->fetchAll(), 'nom');
+            return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'nom');
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la récupération des rôles : " . $e->getMessage());
         }
     }
 
-    public function creerUtilisateur($donnees) {
+    public function creerUtilisateur($pseudo, $email, $motDePasseHache) {
         try {
             $query = "INSERT INTO Utilisateur (pseudo, email, motDePasse) 
                       VALUES (:pseudo, :email, :motDePasse)";
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':pseudo', $donnees['pseudo'], PDO::PARAM_STR);
-            $stmt->bindParam(':email', $donnees['email'], PDO::PARAM_STR);
-            $stmt->bindParam(':motDePasse', $donnees['motDePasse'], PDO::PARAM_STR);
+            $stmt->bindParam(':pseudo', $pseudo, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':motDePasse', $motDePasseHache, PDO::PARAM_STR);
             $stmt->execute();
-            $utilisateurId = $this->db->lastInsertId();
-            $this->ajouterRoleUtilisateur($utilisateurId, 'visiteur');
-            return $utilisateurId;
+            return $this->db->lastInsertId();
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la création de l'utilisateur : " . $e->getMessage());
         }
+    }
+
+    public function assignerRole($utilisateurId, $roleNom) {
+        return $this->ajouterRoleUtilisateur($utilisateurId, $roleNom);
     }
 
     public function ajouterRoleUtilisateur($utilisateurId, $roleNom) {
@@ -75,9 +91,38 @@ class ModeleUtilisateur {
         }
     }
 
-    public function definirJetonReinitialisation($email, $jeton) {
+    public function modifierUtilisateur($utilisateurId, $pseudo, $email) {
         try {
-            $utilisateur = $this->obtenirUtilisateurParEmail($email);
+            $query = "UPDATE Utilisateur SET pseudo = :pseudo, email = :email WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':pseudo', $pseudo, PDO::PARAM_STR);
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $utilisateurId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la modification de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
+    public function supprimerUtilisateur($utilisateurId) {
+        try {
+            $query = "DELETE FROM UtilisateurRole WHERE utilisateurId = :utilisateurId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':utilisateurId', $utilisateurId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $query = "DELETE FROM Utilisateur WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $utilisateurId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
+    public function definirJetonReinitialisation($pseudo, $jeton) {
+        try {
+            $utilisateur = $this->obtenirUtilisateurParPseudo($pseudo);
             if (!$utilisateur) {
                 throw new Exception("Utilisateur non trouvé");
             }
@@ -93,5 +138,18 @@ class ModeleUtilisateur {
             throw new Exception("Erreur lors de la définition du jeton : " . $e->getMessage());
         }
     }
+
+    public function verifierConnexion($pseudo, $motDePasse) {
+        try {
+            $utilisateur = $this->obtenirUtilisateurParPseudo($pseudo);
+            if (!$utilisateur || !password_verify($motDePasse, $utilisateur['motDePasse'])) {
+                throw new Exception("Identifiants invalides");
+            }
+            return $utilisateur;
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la vérification de la connexion : " . $e->getMessage());
+        }
+    }
+    
 }
 ?>

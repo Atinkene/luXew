@@ -6,14 +6,11 @@ class ControleurCategorie {
 
     public function __construct() {
         $this->modeleCategorie = new ModeleCategorie();
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
     }
 
     public function listerCategories() {
         try {
-            $format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_STRING) ?: 'json';
+            $format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'json';
             $categories = $this->modeleCategorie->obtenirToutesCategories();
 
             if ($format === 'xml') {
@@ -35,7 +32,7 @@ class ControleurCategorie {
 
     public function obtenirArticlesParCategorie($categorieId) {
         try {
-            $format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_STRING) ?: 'json';
+            $format = filter_input(INPUT_GET, 'format', FILTER_SANITIZE_SPECIAL_CHARS) ?: 'json';
             if (!filter_var($categorieId, FILTER_VALIDATE_INT)) {
                 throw new Exception('ID de catégorie invalide');
             }
@@ -61,13 +58,13 @@ class ControleurCategorie {
 
     public function creerCategorie() {
         try {
-            if (!isset($_SESSION['utilisateurId']) || !$this->aPermission()) {
+            if (!isset($_SERVER['utilisateurId']) || !$this->aPermission()) {
                 throw new Exception('Non autorisé');
             }
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            $libelle = filter_input(INPUT_POST, 'libelle', FILTER_SANITIZE_STRING);
+            $libelle = filter_input(INPUT_POST, 'libelle', FILTER_SANITIZE_SPECIAL_CHARS);
             if (empty($libelle)) {
                 throw new Exception('Libellé manquant');
             }
@@ -78,10 +75,49 @@ class ControleurCategorie {
         }
     }
 
+    public function modifierCategorie($categorieId) {
+        try {
+            if (!isset($_SERVER['utilisateurId']) || !$this->aPermission()) {
+                throw new Exception('Non autorisé');
+            }
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Méthode non autorisée');
+            }
+            $libelle = filter_input(INPUT_POST, 'libelle', FILTER_SANITIZE_SPECIAL_CHARS);
+            if (empty($libelle)) {
+                throw new Exception('Libellé manquant');
+            }
+            if (!$this->modeleCategorie->obtenirCategorieParId($categorieId)) {
+                throw new Exception('Catégorie non trouvée');
+            }
+            $this->modeleCategorie->modifierCategorie($categorieId, ['libelle' => $libelle]);
+            $this->repondreJson(['succes' => true]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 400);
+        }
+    }
+
+    public function supprimerCategorie($categorieId) {
+        try {
+            if (!isset($_SERVER['utilisateurId']) || !$this->aPermission()) {
+                throw new Exception('Non autorisé');
+            }
+            if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+                throw new Exception('Méthode non autorisée');
+            }
+            if (!$this->modeleCategorie->obtenirCategorieParId($categorieId)) {
+                throw new Exception('Catégorie non trouvée');
+            }
+            $this->modeleCategorie->supprimerCategorie($categorieId);
+            $this->repondreJson(['succes' => true]);
+        } catch (Exception $e) {
+            $this->repondreJson(['erreur' => $e->getMessage()], 400);
+        }
+    }
+
     private function aPermission() {
-        return isset($_SESSION['rolesUtilisateur']) && 
-               in_array('editeur', $_SESSION['rolesUtilisateur']) || 
-               in_array('admin', $_SESSION['rolesUtilisateur']);
+        return isset($_SERVER['roles']) && 
+               (in_array('editeur', $_SERVER['roles']) || in_array('admin', $_SERVER['roles']));
     }
 
     private function repondreJson($donnees, $codeStatut = 200) {

@@ -7,7 +7,7 @@ ini_set('soap.wsdl_cache_ttl', 0);
 
 // Définir l'URI du service SOAP
 $options = [
-    'uri' => 'http://localhost/luXew/public/soap',
+    'uri' => 'http://localhost/luXew/backend/public/soap',
     'soap_version' => SOAP_1_2,
     'encoding' => 'UTF-8'
 ];

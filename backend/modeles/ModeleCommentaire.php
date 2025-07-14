@@ -60,13 +60,20 @@ class ModeleCommentaire {
                     throw new Exception("Commentaire parent invalide ou n'appartient pas à l'article");
                 }
             }
+            
             $query = "INSERT INTO Commentaire (contenu, utilisateurId, articleId, parentId) 
                       VALUES (:contenu, :utilisateurId, :articleId, :parentId)";
             $stmt = $this->db->prepare($query);
             $stmt->bindParam(':contenu', $donnees['contenu'], PDO::PARAM_STR);
             $stmt->bindParam(':utilisateurId', $donnees['utilisateurId'], PDO::PARAM_INT);
             $stmt->bindParam(':articleId', $donnees['articleId'], PDO::PARAM_INT);
-            $stmt->bindParam(':parentId', $donnees['parentId'], PDO::PARAM_INT, $donnees['parentId'] ?? null);
+            
+            if ($donnees['parentId'] === null) {
+                $stmt->bindParam(':parentId', $donnees['parentId'], PDO::PARAM_NULL);
+            } else {
+                $stmt->bindParam(':parentId', $donnees['parentId'], PDO::PARAM_INT);
+            }
+            
             $stmt->execute();
             return $this->db->lastInsertId();
         } catch (PDOException $e) {
@@ -94,6 +101,27 @@ class ModeleCommentaire {
             return $stmt->execute();
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la suppression du commentaire : " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Vérifier si un utilisateur est propriétaire d'un commentaire
+     */
+    public function verifierProprietaire($commentaireId, $utilisateurId) {
+        try {
+            $query = "SELECT utilisateurId FROM Commentaire WHERE id = :commentaireId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':commentaireId', $commentaireId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $commentaire = $stmt->fetch();
+            if (!$commentaire) {
+                throw new Exception("Commentaire introuvable");
+            }
+            
+            return $commentaire['utilisateurId'] == $utilisateurId;
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la vérification de propriété : " . $e->getMessage());
         }
     }
 }

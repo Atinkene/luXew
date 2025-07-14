@@ -1,7 +1,16 @@
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteBase /luXew/backend/public/
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+ RewriteEngine On
+ RewriteBase /luXew/backend/public/
+ 
+ # Transmettre le header Authorization à PHP
+ RewriteCond %{HTTP:Authorization} ^(.*)
+ RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+ 
+ # Rediriger explicitement /soap vers soap.php
+ RewriteRule ^soap$ soap.php [L]
+ 
+ # Réécriture standard sauf si fichier réel ou dossier
+ RewriteCond %{REQUEST_FILENAME} !-f
+ RewriteCond %{REQUEST_FILENAME} !-d
+ RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
 </IfModule>

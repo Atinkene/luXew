@@ -1,190 +1,103 @@
 <?php
 require_once '../modeles/ModeleUtilisateur.php';
-require_once '../modeles/ModeleCommentaire.php';
-require_once '../modeles/ModeleReaction.php';
+require_once '../modeles/ModeleJeton.php';
 
 class ServicesSoap {
     private $modeleUtilisateur;
-    private $modeleCommentaire;
-    private $modeleReaction;
+    private $modeleJeton;
 
     public function __construct() {
         $this->modeleUtilisateur = new ModeleUtilisateur();
-        $this->modeleCommentaire = new ModeleCommentaire();
-        $this->modeleReaction = new ModeleReaction();
+        $this->modeleJeton = new ModeleJeton();
     }
 
-    public function authentifierUtilisateur($email, $motDePasse) {
+    public function authentifierUtilisateur($pseudo, $motDePasse) {
         try {
-            if (empty($email) || empty($motDePasse)) {
-                throw new SoapFault('Client', 'Email ou mot de passe manquant');
+            $utilisateur = $this->modeleUtilisateur->verifierConnexion($pseudo, $motDePasse);
+            if (!$utilisateur) {
+                throw new Exception("Identifiants invalides");
             }
-            $utilisateur = $this->modeleUtilisateur->obtenirUtilisateurParEmail($email);
-            if (!$utilisateur || !password_verify($motDePasse, $utilisateur['motDePasse'])) {
-                throw new SoapFault('Client', 'Identifiants invalides');
+
+            $jeton = $this->modeleJeton->obtenirJetonValideParUtilisateur($utilisateur['id']);
+            if ($jeton) {
+                return ['succes' => true, 'jeton' => $jeton];
+            } else {
+                return ['succes' => false, 'message' => 'Aucun jeton valide trouvé. Veuillez générer un nouveau jeton.'];
             }
-            $roles = $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']);
-            $estAdmin = in_array('admin', $roles);
-            $jeton = bin2hex(random_bytes(32));
-            $this->modeleUtilisateur->definirJetonReinitialisation($email, $jeton);
-            return ['jeton' => $jeton, 'estAdmin' => $estAdmin];
         } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur d\'authentification : ' . $e->getMessage());
+            return ['succes' => false, 'message' => $e->getMessage()];
         }
     }
 
     public function listerUtilisateurs($jeton) {
         try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
+            if (!$this->modeleJeton->validerJeton($jeton)) {
+                throw new SoapFault('Server', 'Jeton invalide ou expiré');
+            }
+            $utilisateur = $this->modeleJeton->obtenirUtilisateurParJeton($jeton);
+            if (!in_array('admin', $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']))) {
+                throw new SoapFault('Server', 'Non autorisé');
             }
             $utilisateurs = $this->modeleUtilisateur->obtenirTousUtilisateurs();
             return ['utilisateurs' => $utilisateurs];
         } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de la récupération des utilisateurs : ' . $e->getMessage());
+            throw new SoapFault('Server', 'Erreur lors de la liste des utilisateurs : ' . $e->getMessage());
         }
     }
 
     public function ajouterUtilisateur($jeton, $pseudo, $email, $motDePasse) {
         try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
+            if (!$this->modeleJeton->validerJeton($jeton)) {
+                throw new SoapFault('Server', 'Jeton invalide ou expiré');
             }
-            if (empty($pseudo) || empty($email) || empty($motDePasse)) {
-                throw new SoapFault('Client', 'Champs manquants');
+            $utilisateur = $this->modeleJeton->obtenirUtilisateurParJeton($jeton);
+            if (!in_array('admin', $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']))) {
+                throw new SoapFault('Server', 'Non autorisé');
             }
-            if ($this->modeleUtilisateur->obtenirUtilisateurParEmail($email)) {
-                throw new SoapFault('Client', 'Email déjà utilisé');
-            }
-            $motDePasseHache = password_hash($motDePasse, PASSWORD_DEFAULT);
-            $donnees = [
-                'pseudo' => $pseudo,
-                'email' => $email,
-                'motDePasse' => $motDePasseHache
-            ];
-            $succes = $this->modeleUtilisateur->creerUtilisateur($donnees);
-            return ['succes' => $succes];
+            $motDePasseHache = password_hash($motDePasse, PASSWORD_BCRYPT);
+            $utilisateurId = $this->modeleUtilisateur->creerUtilisateur($pseudo, $email, $motDePasseHache);
+            $this->modeleUtilisateur->assignerRole($utilisateurId, 'visiteur');
+            return ['succes' => true, 'utilisateurId' => $utilisateurId];
         } catch (Exception $e) {
             throw new SoapFault('Server', 'Erreur lors de l\'ajout de l\'utilisateur : ' . $e->getMessage());
         }
     }
 
-    public function listerCommentairesArticle($jeton, $articleId) {
+    public function modifierUtilisateur($jeton, $utilisateurId, $pseudo, $email) {
         try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
+            if (!$this->modeleJeton->validerJeton($jeton)) {
+                throw new SoapFault('Server', 'Jeton invalide ou expiré');
             }
-            if (!is_numeric($articleId) || $articleId < 1) {
-                throw new SoapFault('Client', 'ID d\'article invalide');
+            $utilisateur = $this->modeleJeton->obtenirUtilisateurParJeton($jeton);
+            if (!in_array('admin', $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']))) {
+                throw new SoapFault('Server', 'Non autorisé');
             }
-            $commentaires = $this->modeleCommentaire->obtenirCommentairesParArticle($articleId);
-            foreach ($commentaires as &$commentaire) {
-                $commentaire['reactions'] = $this->modeleReaction->obtenirReactionsParCommentaire($commentaire['id']);
+            if (!$this->modeleUtilisateur->obtenirUtilisateurParId($utilisateurId)) {
+                throw new SoapFault('Server', 'Utilisateur non trouvé');
             }
-            return ['commentaires' => $commentaires];
+            $this->modeleUtilisateur->modifierUtilisateur($utilisateurId, $pseudo, $email);
+            return ['succes' => true];
         } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de la récupération des commentaires : ' . $e->getMessage());
+            throw new SoapFault('Server', 'Erreur lors de la modification de l\'utilisateur : ' . $e->getMessage());
         }
     }
 
-    public function ajouterCommentaire($jeton, $contenu, $articleId, $utilisateurId, $parentId = null) {
+    public function supprimerUtilisateur($jeton, $utilisateurId) {
         try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
+            if (!$this->modeleJeton->validerJeton($jeton)) {
+                throw new SoapFault('Server', 'Jeton invalide ou expiré');
             }
-            if (empty($contenu) || !is_numeric($articleId) || !is_numeric($utilisateurId)) {
-                throw new SoapFault('Client', 'Champs manquants ou invalides');
+            $utilisateur = $this->modeleJeton->obtenirUtilisateurParJeton($jeton);
+            if (!in_array('admin', $this->modeleUtilisateur->obtenirRolesUtilisateur($utilisateur['id']))) {
+                throw new SoapFault('Server', 'Non autorisé');
             }
-            $donnees = [
-                'contenu' => $contenu,
-                'utilisateurId' => $utilisateurId,
-                'articleId' => $articleId,
-                'parentId' => $parentId
-            ];
-            $commentaireId = $this->modeleCommentaire->ajouterCommentaire($donnees);
-            return ['succes' => true, 'commentaireId' => $commentaireId];
+            if (!$this->modeleUtilisateur->obtenirUtilisateurParId($utilisateurId)) {
+                throw new SoapFault('Server', 'Utilisateur non trouvé');
+            }
+            $this->modeleUtilisateur->supprimerUtilisateur($utilisateurId);
+            return ['succes' => true];
         } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de l\'ajout du commentaire : ' . $e->getMessage());
-        }
-    }
-
-    public function supprimerCommentaire($jeton, $commentaireId) {
-        try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
-            }
-            if (!is_numeric($commentaireId)) {
-                throw new SoapFault('Client', 'ID de commentaire invalide');
-            }
-            $succes = $this->modeleCommentaire->supprimerCommentaire($commentaireId);
-            return ['succes' => $succes];
-        } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de la suppression du commentaire : ' . $e->getMessage());
-        }
-    }
-
-    public function ajouterReaction($jeton, $utilisateurId, $type, $articleId = null, $commentaireId = null) {
-        try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
-            }
-            if (!in_array($type, ['aimer', 'nePasAimer']) || !is_numeric($utilisateurId) || (!$articleId && !$commentaireId)) {
-                throw new SoapFault('Client', 'Type ou cible invalide');
-            }
-            $donnees = [
-                'utilisateurId' => $utilisateurId,
-                'articleId' => $articleId,
-                'commentaireId' => $commentaireId,
-                'type' => $type
-            ];
-            $reactionId = $this->modeleReaction->ajouterReaction($donnees);
-            return ['succes' => true, 'reactionId' => $reactionId];
-        } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de l\'ajout de la réaction : ' . $e->getMessage());
-        }
-    }
-
-    public function supprimerReaction($jeton, $reactionId) {
-        try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
-            }
-            if (!is_numeric($reactionId)) {
-                throw new SoapFault('Client', 'ID de réaction invalide');
-            }
-            $succes = $this->modeleReaction->supprimerReaction($reactionId);
-            return ['succes' => $succes];
-        } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de la suppression de la réaction : ' . $e->getMessage());
-        }
-    }
-
-    public function obtenirStatistiquesReactions($jeton, $articleId = null, $commentaireId = null) {
-        try {
-            if (!$this->validerJeton($jeton)) {
-                throw new SoapFault('Client', 'Jeton invalide');
-            }
-            if (!$articleId && !$commentaireId) {
-                throw new SoapFault('Client', 'Cible manquante');
-            }
-            $reactions = $articleId 
-                ? $this->modeleReaction->obtenirReactionsParArticle($articleId)
-                : $this->modeleReaction->obtenirReactionsParCommentaire($commentaireId);
-            return ['reactions' => $reactions];
-        } catch (Exception $e) {
-            throw new SoapFault('Server', 'Erreur lors de la récupération des réactions : ' . $e->getMessage());
-        }
-    }
-
-    private function validerJeton($jeton) {
-        try {
-            $query = "SELECT * FROM Jeton WHERE jeton = :jeton AND expiration > NOW()";
-            $stmt = $this->modeleUtilisateur->db->prepare($query);
-            $stmt->bindParam(':jeton', $jeton, PDO::PARAM_STR);
-            $stmt->execute();
-            return $stmt->fetch() !== false;
-        } catch (PDOException $e) {
-            throw new Exception('Erreur lors de la validation du jeton : ' . $e->getMessage());
+            throw new SoapFault('Server', 'Erreur lors de la suppression de l\'utilisateur : ' . $e->getMessage());
         }
     }
 }

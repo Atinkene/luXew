@@ -37,6 +37,7 @@ class ModeleArticle {
             $article = $stmt->fetch();
             if ($article) {
                 $article['medias'] = $this->obtenirMediasArticle($id);
+                $article['categories'] = $this->obtenirCategoriesArticle($id);
             }
             return $article;
         } catch (PDOException $e) {
@@ -59,6 +60,51 @@ class ModeleArticle {
         }
     }
 
+    public function modifierArticle($donnees) {
+        try {
+            $query = "UPDATE Article 
+                      SET titre = :titre, contenu = :contenu, dateModification = NOW()
+                      WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':titre', $donnees['titre'], PDO::PARAM_STR);
+            $stmt->bindParam(':contenu', $donnees['contenu'], PDO::PARAM_STR);
+            $stmt->bindParam(':id', $donnees['id'], PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la modification de l'article : " . $e->getMessage());
+        }
+    }
+
+    public function supprimerArticle($id) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Supprimer les médias associés
+            $this->supprimerMediasArticle($id);
+            
+            // Supprimer les catégories associées
+            $this->supprimerCategoriesArticle($id);
+            
+            // Supprimer les commentaires associés
+            $this->supprimerCommentairesArticle($id);
+            
+            // Supprimer les réactions associées
+            $this->supprimerReactionsArticle($id);
+            
+            // Supprimer l'article lui-même
+            $query = "DELETE FROM Article WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $success = $stmt->execute();
+            
+            $this->db->commit();
+            return $success;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            throw new Exception("Erreur lors de la suppression de l'article : " . $e->getMessage());
+        }
+    }
+
     public function ajouterCategorieArticle($articleId, $categorieId) {
         try {
             $query = "INSERT INTO ArticleCategorie (articleId, categorieId) 
@@ -69,6 +115,31 @@ class ModeleArticle {
             $stmt->execute();
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de l'association de la catégorie : " . $e->getMessage());
+        }
+    }
+
+    public function supprimerCategoriesArticle($articleId) {
+        try {
+            $query = "DELETE FROM ArticleCategorie WHERE articleId = :articleId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression des catégories : " . $e->getMessage());
+        }
+    }
+
+    public function obtenirCategoriesArticle($articleId) {
+        try {
+            $query = "SELECT c.* FROM Categorie c 
+                      INNER JOIN ArticleCategorie ac ON c.id = ac.categorieId 
+                      WHERE ac.articleId = :articleId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération des catégories : " . $e->getMessage());
         }
     }
 
@@ -99,6 +170,17 @@ class ModeleArticle {
         }
     }
 
+    public function supprimerMediasArticle($articleId) {
+        try {
+            $query = "DELETE FROM Media WHERE articleId = :articleId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression des médias : " . $e->getMessage());
+        }
+    }
+
     public function obtenirCommentairesArticle($articleId) {
         try {
             $query = "SELECT c.*, u.pseudo as auteurPseudo 
@@ -112,6 +194,60 @@ class ModeleArticle {
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la récupération des commentaires : " . $e->getMessage());
+        }
+    }
+
+    public function supprimerCommentairesArticle($articleId) {
+        try {
+            $query = "DELETE FROM Commentaire WHERE articleId = :articleId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression des commentaires : " . $e->getMessage());
+        }
+    }
+
+    public function supprimerReactionsArticle($articleId) {
+        try {
+            $query = "DELETE FROM Reaction WHERE articleId = :articleId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':articleId', $articleId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la suppression des réactions : " . $e->getMessage());
+        }
+    }
+
+    public function obtenirArticlesParAuteur($auteurId, $offset = 0, $limite = 10) {
+        try {
+            $query = "SELECT a.*, u.pseudo as auteurPseudo 
+                      FROM Article a 
+                      LEFT JOIN Utilisateur u ON a.auteurId = u.id 
+                      WHERE a.auteurId = :auteurId
+                      ORDER BY a.dateCreation DESC 
+                      LIMIT :limite OFFSET :offset";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':auteurId', $auteurId, PDO::PARAM_INT);
+            $stmt->bindParam(':limite', $limite, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération des articles par auteur : " . $e->getMessage());
+        }
+    }
+
+    public function compterArticlesParAuteur($auteurId) {
+        try {
+            $query = "SELECT COUNT(*) as total FROM Article WHERE auteurId = :auteurId";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':auteurId', $auteurId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch();
+            return $result['total'];
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors du comptage des articles : " . $e->getMessage());
         }
     }
 }
