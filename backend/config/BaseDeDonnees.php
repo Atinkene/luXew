@@ -1,27 +1,39 @@
 <?php
 
+require_once '../vendor/autoload.php'; 
+use Dotenv\Dotenv;
+
 class BaseDeDonnees {
     private static $instance = null;
     private $connexion;
 
-    private $hote = 'localhost';
-    private $nomUtilisateur = 'massina';
-    private $motDePasse = 'passer';
-    private $nomBase = 'Luxew';
-    private $charset = 'utf8mb4';
-
     private function __construct() {
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+        $dotenv->load();
+
+        foreach (['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS', 'DB_CHARSET'] as $key) {
+            if (!isset($_ENV[$key])) {
+                throw new Exception("Variable d'environnement manquante : $key");
+            }
+        }
+
+        $hote = $_ENV['DB_HOST'];
+        $nomBase = $_ENV['DB_NAME'];
+        $nomUtilisateur = $_ENV['DB_USER'];
+        $motDePasse = $_ENV['DB_PASS'];
+        $charset = $_ENV['DB_CHARSET'];
+
         try {
-            $dsn = "mysql:host={$this->hote};dbname={$this->nomBase};charset={$this->charset}";
+            $dsn = "mysql:host={$hote};dbname={$nomBase};charset={$charset}";
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$this->charset}"
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$charset}"
             ];
-            $this->connexion = new PDO($dsn, $this->nomUtilisateur, $this->motDePasse, $options);
+            $this->connexion = new PDO($dsn, $nomUtilisateur, $motDePasse, $options);
         } catch (PDOException $e) {
-            throw new Exception("Échec de la connexion : " . $e->getMessage());
+            throw new Exception("Échec de la connexion à la base de données : " . $e->getMessage());
         }
     }
 
@@ -39,4 +51,3 @@ class BaseDeDonnees {
         return $this->connexion;
     }
 }
-?>

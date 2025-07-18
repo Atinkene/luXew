@@ -1,0 +1,1000 @@
+  990  sudo make install
+  991  cd ..
+  992  rm -r gcc-14.1.0
+  993  sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+  994  sudo apt update
+  995  sudo apt install gcc-13 g++-13
+  996  sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+  997  sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+  998  gcc -v
+  999  sudo apt install gcc-12.3.0 g++-12.3.0
+ 1000  sudo apt install gcc-12.3.0 g++-12
+ 1001  sudo apt install gcc-12 g++-12
+ 1002  sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+ 1003  gcc -v
+ 1004  sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+ 1005  gcc -v
+ 1006  ls /var/spool/cron/
+ 1007  gcc -v
+ 1008  clear
+ 1009  code .
+ 1010  python -m json.tool Corrected_NLP_Pipeline_with_Domain_Shift.ipynb > validated.ipynb
+ 1011  python3 -m json.tool Corrected_NLP_Pipeline_with_Domain_Shift.ipynb > validated.ipynb
+ 1012  uname -a
+ 1013  wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.15.2.tar.xz
+ 1014  unxz linux-6.15.2.tar.xz 
+ 1015  ls linux-6.15.2.tar
+ 1016  untar linux-6.15.2.tar
+ 1017  tar -xv linux-6.15.2.tar
+ 1018  tarxv linux-6.15.2.tar
+ 1019  tar
+ 1020  tar --help
+ 1021  diff
+ 1022  diff --help
+ 1023  ls linux-6.15.2*
+ 1024  tar linux-6.15.2.tar
+ 1025  tar -xv linux-6.15.2.tar
+ 1026  tar -xv -f linux-6.15.2.tar
+ 1027  ls linux-6.15.2
+ 1028  cd linux-6.15.2
+ 1029  clear
+ 1030  ls
+ 1031  cd ..
+ 1032  cd linux-6.15.2
+ 1033  patch . -f < ../patch-6.15.2 
+ 1034  ls
+ 1035  mman patch
+ 1036  man patch
+ 1037  patch  -f . < ../patch-6.15.2 
+ 1038  patch  -f .  ../patch-6.15.2 
+ 1039  man patch
+ 1040  ls
+ 1041  patch  -f  ../patch-6.15.2 
+ 1042  patch -f ../patch-6.15.2 
+ 1043  patch -f > ../patch-6.15.2 
+ 1044  patch -f < ../patch-6.15.2 
+ 1045  make moduleconfig
+ 1046  cd ~
+ 1047  clear
+ 1048  ls /proc/filesystems
+ 1049  cat /proc/filesystems
+ 1050  man mount
+ 1051  cat /etc/fstap
+ 1052  cat /etc/fstab
+ 1053  ls
+ 1054  cd sites-available/
+ 1055  ls
+ 1056  sudo nano 000-default.conf 
+ 1057  ls
+ 1058  cd ..
+ 1059  ls
+ 1060  sudo nano apache2.conf 
+ 1061  sudo nano apache2.conf
+ 1062  cd ..
+ 1063  cd frontend/
+ 1064  ls
+ 1065  cd src/
+ 1066  ls
+ 1067  cat App.jsx 
+ 1068  history
+ 1069  sudo ntfsfix /dev/sda1
+ 1070  npm install
+ 1071  npm init -y
+ 1072  npm install react react-dom react-scripts react-flow-renderer tailwindcss postcss autoprefixer
+ 1073  npx tailwindcss init -p
+ 1074  code .
+ 1075  cd ..
+ 1076  ls
+ 1077  cd ..
+ 1078  ls
+ 1079  cd ..
+ 1080  ls
+ 1081  npm run start
+ 1082  mkdir projet
+ 1083  cd projet/
+ 1084  mkdir client
+ 1085  mkdir server
+ 1086  cd client
+ 1087  mkdir -p public/ src/components tests
+ 1088  ls
+ 1089  code .
+ 1090  cd ..
+ 1091  code .
+ 1092  cd client/
+ 1093  npm install
+ 1094  npm start
+ 1095  npm audit fix --force
+ 1096  npm start
+ 1097  npm run dev
+ 1098  npm start
+ 1099  npm install
+ 1100  npm start
+ 1101  npm startnpm install react-scripts
+ 1102  npm install react-scripts
+ 1103  npm start
+ 1104  rm -rf node_modules package-lock.json
+ 1105  npm install
+ 1106  npm start
+ 1107  cd ..
+ 1108  cd server/
+ 1109  npm start
+ 1110  code .
+ 1111  npm start
+ 1112  cd ppp/
+ 1113  php artisan serve
+ 1114  code .
+ 1115  code .
+ 1116  cd ../server/
+ 1117  npm install
+ 1118  npm start
+ 1119  cd ..
+ 1120  cd Rx/
+ 1121  ls
+ 1122  cd projet/client/
+ 1123  npm start
+ 1124  code .
+ 1125  npm start
+ 1126  cd front
+ 1127  clear
+ 1128  npm run dev
+ 1129  npm install
+ 1130  npm run dev
+ 1131  cd ../..
+ 1132  cd ..
+ 1133  ls
+ 1134  cd XML/
+ 1135  clear
+ 1136  ls
+ 1137  code .
+ 1138  git remote -v
+ 1139  git init
+ 1140  cd ..
+ 1141  git init
+ 1142  git add .
+ 1143  git rm --cached client
+ 1144  git rm --cached client -f
+ 1145  git add .
+ 1146  git remote -v
+ 1147  git remote add origin https://github.com/Atinkene/RTS.git
+ 1148  git remote -v
+ 1149  git init
+ 1150  git add .
+ 1151  git commit -m "Initial commit"
+ 1152  git push origin main
+ 1153  git push origin main --force
+ 1154  git remote -v
+ 1155  git push origin main
+ 1156  git init
+ 1157  git remote -v
+ 1158  git add .
+ 1159  git commit -m "initiation"
+ 1160  git fetch origin
+ 1161  git checkout main
+ 1162  git merge origin/master
+ 1163  git checkout main
+ 1164  git merge master --allow-unrelated-histories
+ 1165  git fetch origin
+ 1166  git checkout main
+ 1167  git merge origin/master --allow-unrelated-histories
+ 1168  git push origi main
+ 1169  git fetch origin
+ 1170  git checkout main
+ 1171  git merge origin/master --allow-unrelated-histories
+ 1172  git remote -v
+ 1173  git remote add origin https://github.com/Atinkene/RTS.git
+ 1174  git init
+ 1175  git add .
+ 1176  ls
+ 1177  git init
+ 1178  git add README.md
+ 1179  git commit -m "first commit"
+ 1180  git branch -M main
+ 1181  git remote add origin https://github.com/Atinkene/RTS-simulator.git
+ 1182  git push -u origin main
+ 1183  git init
+ 1184  git add .
+ 1185  git commit -m "first commit"
+ 1186  git branch -M main
+ 1187  git remote add origin https://github.com/Atinkene/RTS-simulator.git
+ 1188  git push -u origin main
+ 1189  git init
+ 1190  git add .
+ 1191  cd client/
+ 1192  npm start
+ 1193  cd server/
+ 1194  npm start
+ 1195  cd ..
+ 1196  cd ppp/ ; code .
+ 1197  clear
+ 1198  php artisan serve
+ 1199  ./gradlew clean build
+ 1200  ls
+ 1201  cd org/
+ 1202  ls
+ 1203  ./gradlew clean build
+ 1204  ls
+ 1205  git remote -v
+ 1206  git add FoodyBack/
+ 1207  git commit -m "Documentation de l api"
+ 1208  git push origin main
+ 1209  ls
+ 1210  cd src/
+ 1211  ls
+ 1212  cd main/
+ 1213  ls
+ 1214  cd java/com/foodyback/
+ 1215  ls
+ 1216  ls config/
+ 1217  git pull origin main
+ 1218  git remote -v
+ 1219  git remote set-url origin https://github.com/Atinkene/FoodyReserv.git
+ 1220  git remote -v
+ 1221  git pull origin main
+ 1222  ls
+ 1223  git reset --hard HEAD
+ 1224  ls
+ 1225  npm install react-icons
+ 1226  cd ..
+ 1227  git remote -v
+ 1228  git remote add origin https://github.com/Atinkene/RTS.git
+ 1229  git init
+ 1230  code .
+ 1231  ls
+ 1232  cd client/
+ 1233  npm run build
+ 1234  cd ..
+ 1235  cd server/
+ 1236  npm run build
+ 1237  cd ..
+ 1238  code .
+ 1239  cd client/
+ 1240  ls
+ 1241  cd ..
+ 1242  code .
+ 1243  cp client/ server/ ../RTS/
+ 1244  cp -r client/ server/ ../RTS/
+ 1245  cd ..
+ 1246  cd RTS/
+ 1247  clear
+ 1248  ls
+ 1249  git init
+ 1250  git add README.md
+ 1251  git commit -m "first commit"
+ 1252  git branch -M main
+ 1253  git remote add origin https://github.com/Atinkene/RTS-simulator.git
+ 1254  git push -u origin main
+ 1255  code .
+ 1256  cd ..
+ 1257  ls
+ 1258  cd PPP/Project/
+ 1259  ls
+ 1260  cd front
+ 1261  clear
+ 1262  code .
+ 1263  clear
+ 1264  npm run dev
+ 1265  cd ../../../IPDL/
+ 1266  clear
+ 1267  ls
+ 1268  cd FoodyReserv/
+ 1269  ls
+ 1270  clear
+ 1271  cd foodyfront/
+ 1272  clear
+ 1273  npm start
+ 1274  ls
+ 1275  cd FoodyBack/
+ 1276  clear
+ 1277  code .
+ 1278  ls
+ 1279  cd apache-activemq-6.1.6/
+ 1280  ls
+ 1281  cd bin/
+ 1282  ls
+ 1283  ./activemq start
+ 1284  cd ..
+ 1285  ls
+ 1286  cd org/
+ 1287  clear
+ 1288  code .
+ 1289  ls
+ 1290  cd src/
+ 1291  ls
+ 1292  cd main/
+ 1293  ls
+ 1294  cd java/com/foodyback/
+ 1295  ls
+ 1296  ls config/
+ 1297  cd ppp/
+ 1298  clear
+ 1299  php artisan serve
+ 1300  cd app/
+ 1301  ls
+ 1302  cd Http/
+ 1303  ls
+ 1304  cd Controllers/
+ 1305  ls
+ 1306  tree
+ 1307  cd ..
+ 1308  ls
+ 1309  cd ..
+ 1310  cd Models/
+ 1311  ls
+ 1312  tree
+ 1313  php artisan list:route
+ 1314  php artisan make:route
+ 1315  php artisan route:list
+ 1316  cd ..
+ 1317  php artisan route:list
+ 1318  php artisan serve
+ 1319  ls
+ 1320  cd apache-activemq-6.1.6-bin/
+ 1321  ls
+ 1322  cd apache-activemq-6.1.6/
+ 1323  ls
+ 1324  cd bin/
+ 1325  ls
+ 1326  ./activemq start
+ 1327  cd ..
+ 1328  ls
+ 1329  cd ..
+ 1330  ls
+ 1331  cd FoodyReserv/foodyfront/
+ 1332  ls
+ 1333  npm start
+ 1334  cdd ../..
+ 1335  cd ../..
+ 1336  cd ..
+ 1337  ls
+ 1338  cd PPP/Project/
+ 1339  ls
+ 1340  code front/ ppp/
+ 1341  ls
+ 1342  clear
+ 1343  cd front
+ 1344  clear
+ 1345  npm start
+ 1346  npm install
+ 1347  clear
+ 1348  npm start
+ 1349  npm run dev
+ 1350  tree
+ 1351  man tree
+ 1352  ls
+ 1353  cd src
+ 1354  tree
+ 1355  cd ..
+ 1356  npm run dev
+ 1357  curl http://localhost:8042/patients
+ 1358  curl http://localhost:8042/instances
+ 1359  curl http://localhost:8042/studies
+ 1360  curl http://localhost:8042/patients
+ 1361  ls
+ 1362  clear
+ 1363  git init
+ 1364  git add README.md
+ 1365  git commit -m "first commit"
+ 1366  git branch -M main
+ 1367  git remote add origin https://github.com/Atinkene/pppFront.git
+ 1368  git push -u origin main
+ 1369  git init
+ 1370  git add .
+ 1371  git commit -m "init project"
+ 1372  git branch -M main
+ 1373  git remote add origin https://github.com/Atinkene/pppFront.git
+ 1374  git push -u origin main
+ 1375  npm run build
+ 1376  npm start
+ 1377  npm run dev
+ 1378  chage -M 60
+ 1379  wget https://drive.google.com/file/d/12mfkmFGQQYzzFjsuQq4L4vx7egEpMg_y/view
+ 1380  ls
+ 1381  arch
+ 1382  cd server/
+ 1383  clear
+ 1384  npm run dev
+ 1385  npm install
+ 1386  npm run dev
+ 1387  clear
+ 1388  ls
+ 1389  npm start
+ 1390  cd client/
+ 1391  clear
+ 1392  npm run dev
+ 1393  clear
+ 1394  npm start
+ 1395  clear
+ 1396  npm start
+ 1397  code .
+ 1398  cd .. 
+ 1399  clear
+ 1400  cd server/
+ 1401  clear
+ 1402  code .
+ 1403  clear
+ 1404  cd ../client/
+ 1405  code .
+ 1406  sudo apt update 
+ 1407  mkdir -p frontend backend && cd frontend && npx create-react-app . && cd ../backend && npm init -y
+ 1408  cd frontend && npm install react-flow-renderer @reactflow/node-resizer @reactflow/background chart.js react-chartjs-2 jspdf @mui/material @mui/icons-material @emotion/react @emotion/styled
+ 1409  cd backend && npm install express cors body-parser nodemon
+ 1410  rm -rf * && mkdir -p frontend backend && touch frontend/package.json backend/package.json
+ 1411  cd frontend && npx create-react-app .
+ 1412  rm -rf * && npx create-react-app frontend && mkdir backend && cd backend && npm init -y
+ 1413  code .
+ 1414  ls
+ 1415  code .
+ 1416  clear
+ 1417  cd server/
+ 1418  npm start
+ 1419  clear
+ 1420  npm start
+ 1421  clear
+ 1422  npm start
+ 1423  clear
+ 1424  npm start
+ 1425  cd client/
+ 1426  npm start
+ 1427  clear
+ 1428  npm start
+ 1429  clear
+ 1430  npm start
+ 1431  sudo apt update firefox
+ 1432  sudo apt upgrade firefox
+ 1433  npm install lucide-react
+ 1434  npm install chartjs-plugin-zoom
+ 1435  npm install heroicons
+ 1436  npm install @heroicons/react
+ 1437  cd client
+ 1438  clear
+ 1439  code .
+ 1440  npm run dev
+ 1441  npm start
+ 1442  clear
+ 1443  npm start
+ 1444  code .
+ 1445  cd server/
+ 1446  clear
+ 1447  code .
+ 1448  npm start
+ 1449  cd client/
+ 1450  clear
+ 1451  npm start
+ 1452  cd ..
+ 1453  cd RTS
+ 1454  clear
+ 1455  cd client/
+ 1456  npm start
+ 1457  cd ..
+ 1458  ls
+ 1459  cd RTS_Project/
+ 1460  cd client/
+ 1461  clear
+ 1462  npm start
+ 1463  clear
+ 1464  npm start
+ 1465  npm install react-three/fiber
+ 1466  npm install three @react-three/fiber @react-three/drei
+ 1467  npm install three @react-three/fiber@8.16.8 @react-three/drei@9.105.6
+ 1468  npm uninstall three @react-three/fiber@8.16.8 @react-three/drei@9.105.6
+ 1469  cd server/
+ 1470  npm start
+ 1471  clear
+ 1472  npm start
+ 1473  clear
+ 1474  npm start
+ 1475  clear
+ 1476  npm start
+ 1477  clear
+ 1478  npm start
+ 1479  clear
+ 1480  npm start
+ 1481  clear
+ 1482  npm start
+ 1483  clear
+ 1484  npm start
+ 1485  clear
+ 1486  npm start
+ 1487  clear
+ 1488  npm start
+ 1489  clear
+ 1490  cd ..
+ 1491  cd server/
+ 1492  clear
+ 1493  npm start
+ 1494  clear
+ 1495  npm start
+ 1496  clear
+ 1497  npm start
+ 1498  clear
+ 1499  npm start
+ 1500  clear
+ 1501  npm start
+ 1502  clear
+ 1503  npm start
+ 1504  clear
+ 1505  npm start
+ 1506  clear
+ 1507  npm start
+ 1508  clear
+ 1509  npm start
+ 1510  sudo apt install firefox
+ 1511  sudo apt update
+ 1512  sudo apt upgrade
+ 1513  ls
+ 1514  cd client
+ 1515  ls
+ 1516  cd ..
+ 1517  cd server/
+ 1518  echo "# RTS_Backend" >> README.md
+ 1519  git init
+ 1520  git add README.md
+ 1521  git commit -m "first commit"
+ 1522  git branch -M main
+ 1523  git remote add origin https://github.com/Atinkene/RTS_Backend.git
+ 1524  git push -u origin main
+ 1525  git push origin main
+ 1526  git config --global init.defaultBranch main
+ 1527  git push origin main
+ 1528  git remote -v
+ 1529  git check
+ 1530  git check --help
+ 1531  git --help
+ 1532  git add .
+ 1533  git push origin main
+ 1534  git commit -m "Initiation"
+ 1535  git diff
+ 1536  git pull origin main
+ 1537  git diff
+ 1538  git add .
+ 1539  git commit -m "Initiation"
+ 1540  git pull --help
+ 1541  cd client/
+ 1542  git add .
+ 1543  gir commit -m ""ajout de l aide""
+ 1544  git commit -m ""ajout de l aide""
+ 1545  git commit -m "ajout de l aide"
+ 1546  git push origin main
+ 1547  cd server/
+ 1548  ls
+ 1549  echo "# RTS_Back" >> README.md
+ 1550  git init
+ 1551  git add .
+ 1552  git commit -m "first commit"
+ 1553  git branch -M main
+ 1554  git remote add origin https://github.com/Atinkene/RTS_Back.git
+ 1555  git push -u origin main
+ 1556  git remote remove origin
+ 1557  git remote -v
+ 1558  echo "# RTS_Back" >> README.md
+ 1559  git init
+ 1560  git add .
+ 1561  git commit -m "first commit"
+ 1562  git branch -M main
+ 1563  git remote add origin https://github.com/Atinkene/RTS_Back.git
+ 1564  git push -u origin main
+ 1565  cd client/
+ 1566  echo "# RTS_Front" >> README.md
+ 1567  git init
+ 1568  git add .
+ 1569  git commit -m "first commit"
+ 1570  git branch -M main
+ 1571  git remote add origin https://github.com/Atinkene/RTS_Front.git
+ 1572  git push -u origin main
+ 1573  cliear
+ 1574  clear
+ 1575  git init
+ 1576  git add .
+ 1577  git commit -m "first commit"
+ 1578  git branch -M main
+ 1579  git remote add origin https://github.com/Atinkene/RTS_Front.git
+ 1580  git push -u origin main
+ 1581  git add .
+ 1582  git commit -m "Dockerfile"
+ 1583  git push -u origin main
+ 1584  git add .
+ 1585  git commit -m "Dockerfile1"
+ 1586  git push -u origin main
+ 1587  npm install react-scripts --save
+ 1588  git add package.json package-lock.json
+ 1589  git commit -m "Ajout de react-scripts"
+ 1590  git push origin main
+ 1591  git push
+ 1592  git add .
+ 1593  git commit -m "Ajout de la config de nginx et mise à jour du Dockerfile"
+ 1594  git push origin main
+ 1595  git add .
+ 1596  git commit -m "Ajout de render.yaml"
+ 1597  git push origin main
+ 1598  git add .
+ 1599  git commit -m "Mise a jour du Dockerfile"
+ 1600  sudo apt update ; sudo apt dist-upgrade
+ 1601  cd ..
+ 1602  npm start
+ 1603  git add .
+ 1604  git commit -m "Responsive"
+ 1605  git push origin main
+ 1606  git add .
+ 1607  git commit -m "Configuration des équipements"
+ 1608  git push origin main
+ 1609  git add .
+ 1610  git commit -m "Responsive"
+ 1611  git push origin main
+ 1612  git add .
+ 1613  git commit -m "Responsive"
+ 1614  git push origin main
+ 1615  git add .
+ 1616  git commit -m "Linkconfig update"
+ 1617  cd ..; cd server
+ 1618  git add .
+ 1619  git commit -m "Linkconfig update"
+ 1620  git push origin main
+ 1621  cd ..; cd client
+ 1622  git add .
+ 1623  git commit -m "Linkconfig update"
+ 1624  git push origin main
+ 1625  git remote -v
+ 1626  git add .
+ 1627  git commit -m "Linkconfig update"
+ 1628  git push origin main
+ 1629  git add .
+ 1630  git commit -m "Linkconfig update"
+ 1631  git push origin main
+ 1632  cd ..; cd server
+ 1633  git add .
+ 1634  git commit -m "Linkconfig update"
+ 1635  git push origin main
+ 1636  git add .
+ 1637  git commit -m "Linkconfig update"
+ 1638  git push origin main
+ 1639  cd ..; cd client
+ 1640  git add .
+ 1641  git commit -m "Linkconfig update"
+ 1642  git push origin main
+ 1643  git add .
+ 1644  git commit -m "Linkconfig update"
+ 1645  git push origin main
+ 1646  cd ..; cd server
+ 1647  git add .
+ 1648  git commit -m "Linkconfig update"
+ 1649  git push origin main
+ 1650  cd client
+ 1651  git add .
+ 1652  git commit -m "Linkconfig update"
+ 1653  git push origin main
+ 1654  cd .. ; cd server
+ 1655  git add .
+ 1656  git commit -m "Linkconfig update"
+ 1657  git push origin main
+ 1658  git add .
+ 1659  git commit -m "Linkconfig update"
+ 1660  git push origin main
+ 1661  cd .. ; cd client
+ 1662  git add .
+ 1663  git commit -m "Linkconfig update"
+ 1664  git push origin main
+ 1665  git add .
+ 1666  git commit -m "LinkconfigPopup update"
+ 1667  git push origin main
+ 1668  git add .
+ 1669  git commit -m "LinkconfigPopup update"
+ 1670  git add .
+ 1671  git commit -m "LinkconfigPopup update"
+ 1672  git push origin main
+ 1673  code .
+ 1674  cd client/
+ 1675  npm start
+ 1676  sudo snap install vlc
+ 1677  git pull origin main
+ 1678  git remote -v
+ 1679  git fetch origin
+ 1680  git log HEAD..origin/main --oneline
+ 1681  git pull --rebase origin main
+ 1682  code .
+ 1683  code .
+ 1684  ls
+ 1685  git clone https://github.com/NdellaDiop/FoodyReserv.git
+ 1686  clear
+ 1687  git clone https://github.com/NdellaDiop/FoodyReserv.git
+ 1688  ls
+ 1689  cd foodyfront/
+ 1690  clear
+ 1691  ls
+ 1692  npm install
+ 1693  rm -r node_modules/
+ 1694  npm install
+ 1695  ls
+ 1696  ls src/
+ 1697  rm -rf node_modules package-lock.json
+ 1698  npm install
+ 1699  ls
+ 1700  clear
+ 1701  cd FoodyBack/
+ 1702  clea
+ 1703  clear
+ 1704  ls
+ 1705  add .
+ 1706  git add .
+ 1707  git commit -m "Mise a jour des caracteristiques du menu"
+ 1708  git remote -v
+ 1709  git push origin main
+ 1710  clear
+ 1711  ls
+ 1712  git remote -v
+ 1713  git add .
+ 1714  git commit -m "Mise a jour du backend"
+ 1715  git push origin main
+ 1716  cd ..
+ 1717  ls
+ 1718  cd foodyfront/
+ 1719  ls
+ 1720  git remote -v
+ 1721  git add .
+ 1722  git commit -m "Mise a jour du frontend et integration avec le backend"
+ 1723  git push origin main
+ 1724  echo "# Waxtaan" >> README.md
+ 1725  git init
+ 1726  git add .        
+ 1727  git commit -m "first commit"
+ 1728  git branch -M main
+ 1729  git remote add origin https://github.com/Atinkene/Waxtaan.git
+ 1730  git push -u origin main
+ 1731  gradle init --type java-application            --dsl groovy            --test-framework junit-jupiter            --project-name chat-xml            --package sn.esp.dgi.chat
+ 1732  ls
+ 1733  gradle init --type java-application            --dsl groovy            --test-framework junit-jupiter            --project-name Waxtaan            --package sn.esp.dgi.waxtaan
+ 1734  ls
+ 1735  ./gradlew run
+ 1736  ./gradlew test
+ 1737  gradle wrapper
+ 1738  ./gradlew build
+ 1739  ./gradle wrapper
+ 1740  gradle wrapper
+ 1741  ./gradlew createBaseFiles
+ 1742  mkdir -p src/main/java/sn/esp/dgi/waxtaan/model src/main/java/sn/esp/dgi/waxtaan/model/enums src/main/java/sn/esp/dgi/waxtaan/dao/interfaces src/main/java/sn/esp/dgi/waxtaan/dao/impl src/main/java/sn/esp/dgi/waxtaan/service/interfaces src/main/java/sn/esp/dgi/waxtaan/service/impl src/main/java/sn/esp/dgi/waxtaan/controller src/main/java/sn/esp/dgi/waxtaan/ui/console src/main/java/sn/esp/dgi/waxtaan/ui/gui src/main/java/sn/esp/dgi/waxtaan/util src/main/java/sn/esp/dgi/waxtaan/config src/main/java/sn/esp/dgi/waxtaan/exception src/main/resources/xml src/main/resources/xsd src/main/resources/config src/test/java/sn/esp/dgi/waxtaan/dao src/test/java/sn/esp/dgi/waxtaan/service src/test/java/sn/esp/dgi/waxtaan/util src/test/resources docs/rapport/images docs/javadoc docs/uml docs/presentation scripts
+ 1743  ls
+ 1744  ls src
+ 1745  ls src/main/java/sn/esp/dgi/waxtaan/
+ 1746  #!/bin/bash
+ 1747  # Création des dossiers
+ 1748  mkdir -p src/main/java/sn/esp/dgi/waxtaan/model src/main/java/sn/esp/dgi/waxtaan/model/enums src/main/java/sn/esp/dgi/waxtaan/dao/interfaces src/main/java/sn/esp/dgi/waxtaan/dao/impl src/main/java/sn/esp/dgi/waxtaan/service/interfaces src/main/java/sn/esp/dgi/waxtaan/service/impl src/main/java/sn/esp/dgi/waxtaan/controller src/main/java/sn/esp/dgi/waxtaan/ui/console src/main/java/sn/esp/dgi/waxtaan/ui/gui src/main/java/sn/esp/dgi/waxtaan/util src/main/java/sn/esp/dgi/waxtaan/config src/main/java/sn/esp/dgi/waxtaan/exception src/main/resources/xml src/main/resources/xsd src/main/resources/config src/test/java/sn/esp/dgi/waxtaan/dao src/test/java/sn/esp/dgi/waxtaan/service src/test/java/sn/esp/dgi/waxtaan/util src/test/resources docs/rapport/images docs/javadoc docs/uml docs/presentation scripts
+ 1749  echo "Dossiers créés."
+ 1750  # Création du fichier application.properties
+ 1751  cat > src/main/resources/config/application.properties << EOF
+ 1752  # Configuration de l'application
+ 1753  app.name=waxtaan XML
+ 1754  app.version=1.0.0
+ 1755  EOF
+ 1756  echo "Fichier application.properties créé."
+ 1757  # Création du fichier README.md
+ 1758  cat > README.md << EOF
+ 1759  # Projet Waxtaan XML - ESP/UCAD
+ 1760  ## Description
+ 1761  Application de messagerie instantanée avec stockage XML
+ 1762  ## Prérequis
+ 1763  - Java 17+
+ 1764  - Gradle 7.2+
+ 1765  ## Installation
+ 1766  \`\`\`bash
+ 1767  ./gradlew build
+ 1768  \`\`\`
+ 1769  EOF
+ 1770  echo "Fichier README.md créé."
+ 1771  ls
+ 1772  cd ..
+ 1773  nano file.sh
+ 1774  ./file.sh
+ 1775  cd Waxtaan/
+ 1776  ls
+ 1777  code .
+ 1778  ./gradlew run
+ 1779  echo "# Waxtaan" >> README.md
+ 1780  git init
+ 1781  git add .
+ 1782  git commit -m "first commit"
+ 1783  git branch -M main
+ 1784  git remote add origin https://github.com/Atinkene/Waxtaan.git
+ 1785  git push -u origin main
+ 1786  ./Cursor-1.2.2-x86_64.AppImage 
+ 1787  bash ./Cursor-1.2.2-x86_64.AppImage 
+ 1788  python3 user_management.py 
+ 1789  python3 install zeep 
+ 1790  python3 install zeep
+ 1791  pip install zeep
+ 1792  python3 user_management.py 
+ 1793  python3 user_management.py
+ 1794  curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh && sudo bash ./wazuh-install.sh -a
+ 1795  ls
+ 1796  echo "# luXew" >> README.md
+ 1797  git init
+ 1798  git add .
+ 1799  git commit -m "first commit"
+ 1800  git branch -M main
+ 1801  git remote add origin https://github.com/Atinkene/luXew.git
+ 1802  git push -u origin main
+ 1803  git add .
+ 1804  git commit -m "second commit"
+ 1805  git push -u origin main
+ 1806  cf frontend/
+ 1807  cd frontend/
+ 1808  ls
+ 1809  npx create-next-app@latest
+ 1810  git add .
+ 1811  git commit -m "third commit"
+ 1812  git push -u origin main
+ 1813  cd ..
+ 1814  cd .. backend/
+ 1815  cd backend/
+ 1816  git add .
+ 1817  git commit -m "Backend"
+ 1818  git push -u origin main
+ 1819  /usr/bin/python3 /var/www/html/luXew/client/main.py
+ 1820  /usr/bin/python3 /var/www/html/luXew/client/vues/ecranGestionUtilisateurs.py
+ 1821  /usr/bin/python3 /var/www/html/luXew/client/main.py
+ 1822  /usr/bin/python3 /var/www/html/luXew/client/vues/ecranConnexion.py
+ 1823  /usr/bin/python3 /var/www/html/luXew/client/main.py
+ 1824  cd backend/
+ 1825  ls
+ 1826  git remote -v
+ 1827  git add .
+ 1828  git commit -m "Final backend implementation"
+ 1829  git push origin main
+ 1830  git ignore
+ 1831  git --help
+ 1832  git filter-brnch --force --index-filter \ "git rm --cashed --ignore-unmatch .env" \ --prune-empty --tag-name-filter cat -- --all
+ 1833  git filter-branch --force --index-filter \ "git rm --cashed --ignore-unmatch .env" \ --prune-empty --tag-name-filter cat -- --all
+ 1834  git reflog expire --expire=now --all 
+ 1835  git gc --prune=now --aggressive
+ 1836  git push origin
+ 1837  git push origin --force
+ 1838  git push origin --force --all
+ 1839  git push origin --force --tags
+ 1840  /usr/bin/python3 /var/www/html/luXew/client/main.py
+ 1841  cd client/
+ 1842  ls
+ 1843  git add .
+ 1844  git commit -m "Client App update"
+ 1845  git push origin main
+ 1846  cd ..
+ 1847  clear
+ 1848  npx create-react-router@latest
+ 1849  ls
+ 1850  ls
+ 1851  cd backend/
+ 1852  ls
+ 1853  cd public
+ 1854  ls
+ 1855  curl -X POST "http://localhost/luXew/backend/public/login"      -H "Content-Type: application/x-www-form-urlencoded"      -c cookies.txt      -d "email=admin@luxew.com&motDePasse=passer123"
+ 1856  sudo nano /etc/apache2/sites-available/000-default.conf)
+ 1857  sudo nano /etc/apache2/sites-available/000-default.conf
+ 1858  curl -X POST "http://localhost/luXew/backend/public/login"      -H "Content-Type: application/x-www-form-urlencoded"      -c cookies.txt      -d "email=admin@luxew.com&motDePasse=passer123"
+ 1859  cd ..
+ 1860  composer install
+ 1861  composer require cloudinary/cloudinary_php
+ 1862  composer require firebase/php-jwt
+ 1863  composer require vlucas/phpdotenv
+ 1864  composer require zircote/swagger-php
+ 1865  composer show zircote/swagger-php
+ 1866  tree -u
+ 1867  tree --help
+ 1868  ls
+ 1869  ls confif
+ 1870  clear
+ 1871  ls
+ 1872  curl http://localhost/luXew/backend/public/soap?wsdl
+ 1873  curl http://localhost/luXew/backend/public/soap/?wsdl
+ 1874  curl http://localhost/luXew/backend/public/wsdl/?wsdl
+ 1875  cd public/
+ 1876  ls
+ 1877  curl http://localhost/luXew/backend/public/soap.php?wsdl
+ 1878  curl http://localhost/luXew/backend/public/soap.php
+ 1879  curl http://localhost/luXew/backend/public/soap.php?wsdl
+ 1880  curl -i http://localhost/luXew/backend/public/soap.php?wsdl
+ 1881  curl http://localhost/luXew/backend/public/soap.php?wsdl
+ 1882  cat /tmp/debug_soap.log
+ 1883  sudo apt install libapache2-mod-php
+ 1884  sudo systemctl restart apache2
+ 1885  curl -i http://localhost/luXew/backend/public/soap.php?wsdl
+ 1886  curl http://localhost/luXew/backend/public/soap.php?wsdl
+ 1887  curl -i http://localhost/luXew/backend/public/soap.php?wsdl
+ 1888  clear
+ 1889  curl -i http://localhost/luXew/backend/public/soap.php
+ 1890  curl -i http://localhost/luXew/backend/public/soap.php?wsdl
+ 1891  nano soap-authentifierUtilisateur.xml
+ 1892  curl -X POST "http://localhost/luXew/backend/public/soap.php"   -H "Content-Type: application/soap+xml; charset=utf-8"   --data @soap-authentifierUtilisateur.xml
+ 1893  ls -al
+ 1894  composer require robsontenorio/php-soap-wsdl-generator
+ 1895  ls
+ 1896  curl -X POST "http://localhost/luXew/backend/public/soap.php"   -H "Content-Type: application/soap+xml; charset=utf-8"   --data @soap-authentifierUtilisateur.xml
+ 1897  ls -al
+ 1898  curl -X POST http://localhost/luXew/backend/public/soap.php   -H "Content-Type: application/soap+xml; charset=utf-8"   -H "SOAPAction: authentifierUtilisateur"   -d @- <<EOF<?xml version="1.0" encoding="UTF-8"?>
+ 1899  <soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"
+ 1900                   xmlns:tns="http://localhost/luXew/backend/public/soap">
+ 1901    <soap12:Body>
+ 1902      <tns:authentifierUtilisateur>
+ 1903        <pseudo>admin</pseudo>
+ 1904        <motDePasse>passer123</motDePasse>
+ 1905      </tns:authentifierUtilisateur>
+ 1906    </soap12:Body>
+ 1907  </soap12:Envelope>
+ 1908  EOF
+ 1909  curl -X POST http://localhost/luXew/backend/public/soap.php   -H "Content-Type: application/soap+xml; charset=utf-8"   -H "SOAPAction: authentifierUtilisateur"   -d @- <<EOF<?xml version="1.0" encoding="UTF-8"?>
+ 1910  <soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"
+ 1911                   xmlns:tns="http://localhost/luXew/backend/public/soap">
+ 1912    <soap12:Body>
+ 1913      <tns:authentifierUtilisateur>
+ 1914        <pseudo>admin</pseudo>
+ 1915        <motDePasse>passer123</motDePasse>
+ 1916      </tns:authentifierUtilisateur>
+ 1917    </soap12:Body>
+ 1918  </soap12:Envelope>
+ 1919  EOF
+ 1920  clear
+ 1921  curl http://localhost/luXew/backend/public/soap?wsdl
+ 1922  ls
+ 1923  nano soap-authentifierUtilisateur.xml 
+ 1924  curl -X POST http://localhost/luXew/backend/public/soap.php -H "Content-Type: application/soap+xml; charset=utf-8" -H "SOAPAction: authentifierUtilisateur" --data @soap-authentifierUtilisateur.xml
+ 1925  cd..
+ 1926  cd ..
+ 1927  composer require robsontenorio/php-soap-wsdl-generator
+ 1928  composer require robsontenorio/php-soap-wsdl-generator:dev-master --prefer-source
+ 1929  composer update
+ 1930  clear
+ 1931  cd ..
+ 1932  cd client/
+ 1933  ls
+ 1934  clear
+ 1935  tree -u
+ 1936  ls
+ 1937  python3 main.py 
+ 1938  cd ..
+ 1939  clear
+ 1940  cd frontend/
+ 1941  ls
+ 1942  npm start
+ 1943  clear
+ 1944  npm install
+ 1945  npm start
+ 1946  npm run dev
+ 1947  ls
+ 1948  cd ..
+ 1949  ls
+ 1950  clear
+ 1951  cd frontend/
+ 1952  clear
+ 1953  npm install
+ 1954  curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh && sudo bash ./wazuh-install.sh -a
+ 1955  systemctl status wazuh-agent
+ 1956  ls
+ 1957  ./wazuh-install.sh
+ 1958  sudo ./wazuh-install.sh
+ 1959  sudo bash ./wazuh-install.sh
+ 1960  bash ./wazuh-install.sh
+ 1961  sudo bash -wd -wi -ws ./wazuh-install.sh
+ 1962  sudo bash -wd ./wazuh-install.sh
+ 1963  sudo bash ./wazuh-install.sh -a
+ 1964  sudo bash ./wazuh-install.sh -ws
+ 1965  sudo bash ./wazuh-install.sh -a -ws
+ 1966  curl -sO https://packages.wazuh.com/4.12/wazuh-install.sh && sudo bash ./wazuh-install.sh -a
+ 1967  curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+ 1968  sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+ 1969  sudo su
+ 1970  sudo mysql
+ 1971  sudo mysql -u massina -p
+ 1972  ls
+ 1973  clear
+ 1974  python3 user_management.py
+ 1975  clear
+ 1976  python3 user_management.py
+ 1977  sudo apt auto-rmove
+ 1978  sudo apt auto-remove
+ 1979  sudo apt auto-remove --purge
+ 1980  npm install react-router-dom
+ 1981  npm install axios
+ 1982  npm install tailwindcss @tailwindcss/vite
+ 1983  cat /tmp/debug_soap.log
+ 1984  cat /var/log/apache2/error.log
+ 1985  curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+ 1986  curl -X POST http://localhost/luXew/backend/public/connexion   -H "Content-Type: application/json"   -d '{"pseudo":"admin","motDePasse":"passer123"}'
+ 1987  curl -X POST http://localhost/luXew/backend/public/connexion   -H "Content-Type: application/json"   -d '{"pseudo":"visiteur1","motDePasse":"passer123"}'
+ 1988  curl -X POST http://localhost/luXew/backend/public/connexion   -H "Content-Type: application/json"   -d '{"pseudo":"admin","motDePasse":"passer123"}'
+ 1989  history > commande

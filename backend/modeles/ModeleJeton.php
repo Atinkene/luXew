@@ -53,9 +53,12 @@ class ModeleJeton {
         try {
             $requete = $this->connexion->prepare("DELETE FROM Jeton WHERE jeton = ?");
             $requete->execute([$jeton]);
-            return $requete->rowCount() > 0;
+            if ($requete->rowCount() === 0) {
+                throw new Exception("Aucun jeton supprimé: jeton non trouvé");
+            }
+            return true;
         } catch (PDOException $e) {
-            throw new Exception("Erreur lors de la suppression du jeton : " . $e->getMessage());
+            throw new Exception("Erreur lors de la suppression du jeton: " . $e->getMessage());
         }
     }
 

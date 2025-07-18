@@ -16,18 +16,30 @@ class ControleurReaction {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            
-            $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_SPECIAL_CHARS);
-            $articleId = filter_input(INPUT_POST, 'articleId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
-            $commentaireId = filter_input(INPUT_POST, 'commentaireId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?: null;
 
-            if (!in_array($type, ['like', 'unlike']) || (!$articleId && !$commentaireId)) {
-                throw new Exception('Type ou cible invalide');
+            // Read JSON input
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+
+            if ($data === null || !isset($data['type'])) {
+                throw new Exception('Données invalides');
+            }
+
+            $type = strtolower(trim($data['type']));
+            if (!in_array($type, ['like', 'unlike'])) {
+                throw new Exception('Type invalide');
+            }
+
+            $articleId = isset($data['articleId']) ? filter_var($data['articleId'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) : null;
+            $commentaireId = isset($data['commentaireId']) ? filter_var($data['commentaireId'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) : null;
+
+            if (!$articleId && !$commentaireId) {
+                throw new Exception('Cible (article ou commentaire) requise');
             }
 
             $reactionExistante = $this->modeleReaction->obtenirReactionUtilisateur(
-                $_SERVER['utilisateurId'], 
-                $articleId, 
+                $_SERVER['utilisateurId'],
+                $articleId,
                 $commentaireId
             );
 
@@ -62,11 +74,11 @@ class ControleurReaction {
             if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
                 throw new Exception('Méthode non autorisée');
             }
-            
+
             if (!$this->peutSupprimerReaction($reactionId, $_SERVER['utilisateurId'])) {
                 throw new Exception('Vous ne pouvez supprimer que vos propres réactions');
             }
-            
+
             $this->modeleReaction->supprimerReaction($reactionId);
             $this->repondreJson(['succes' => true]);
         } catch (Exception $e) {
@@ -86,7 +98,7 @@ class ControleurReaction {
                 throw new Exception('Cible manquante');
             }
 
-            $reactions = $articleId 
+            $reactions = $articleId
                 ? $this->modeleReaction->obtenirReactionsParArticle($articleId)
                 : $this->modeleReaction->obtenirReactionsParCommentaire($commentaireId);
 
@@ -101,7 +113,7 @@ class ControleurReaction {
             if (!isset($_SERVER['utilisateurId'])) {
                 throw new Exception('Non autorisé');
             }
-            
+
             if ($articleId && !filter_var($articleId, FILTER_VALIDATE_INT)) {
                 throw new Exception('ID d\'article invalide');
             }
@@ -113,8 +125,8 @@ class ControleurReaction {
             }
 
             $reaction = $this->modeleReaction->obtenirReactionUtilisateur(
-                $_SERVER['utilisateurId'], 
-                $articleId, 
+                $_SERVER['utilisateurId'],
+                $articleId,
                 $commentaireId
             );
 
@@ -125,12 +137,12 @@ class ControleurReaction {
     }
 
     private function peutSupprimerReaction($reactionId, $utilisateurId) {
-        return $this->modeleReaction->verifierProprietaire($reactionId, $utilisateurId) || 
+        return $this->modeleReaction->verifierProprietaire($reactionId, $utilisateurId) ||
                $this->aPermissionAdmin();
     }
 
     private function aPermissionAdmin() {
-        return isset($_SERVER['roles']) && 
+        return isset($_SERVER['roles']) &&
                in_array('admin', $_SERVER['roles']);
     }
 

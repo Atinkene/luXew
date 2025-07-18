@@ -1,0 +1,61 @@
+curl -X POST http://localhost/luXew/backend/public/categories/creer \
+-H "Authorization: Bearer $jwt" \
+-H "Content-Type: application/json" \
+-d '{"libelle":"Politique"}'
+
+curl -X POST http://localhost/luXew/backend/public/categories/creer \
+-H "Authorization: Bearer $jwt" \
+-H "Content-Type: application/json" \
+-d '{"libelle":"Sport"}'
+
+curl -X POST http://localhost/luXew/backend/public/categories/creer \
+-H "Authorization: Bearer $jwt" \
+-H "Content-Type: application/json" \
+-d '{"libelle":"Technologie"}'
+
+curl -X POST http://localhost/luXew/backend/public/categories/creer \
+-H "Authorization: Bearer $jwt" \
+-H "Content-Type: application/json" \
+-d '{"libelle":"Économie"}'
+
+curl -X POST http://localhost/luXew/backend/public/categories/creer \
+-H "Authorization: Bearer $jwt" \
+-H "Content-Type: application/json" \
+-d '{"libelle":"Culture"}'
+
+
+
+curl -X POST http://localhost/luXew/backend/public/articles/creer \
+-H "Authorization: Bearer $jwt" \
+-F "titre=JO 2024 : La France triomphe à domicile avec un record de médailles" \
+-F "contenu=À l’occasion des Jeux Olympiques 2024 qui se sont tenus à Paris, la France a réalisé une performance historique en remportant un total de 64 médailles, dont 22 en or, plaçant le pays au troisième rang mondial derrière les États-Unis et la Chine. Les épreuves de natation, d’athlétisme et de judo ont été particulièrement marquantes, avec des athlètes comme Léon Marchand, qui a dominé les bassins avec quatre médailles d’or, et Teddy Riner, qui a ajouté un troisième titre olympique à sa légende. La cérémonie de clôture, marquée par une parade sur la Seine, a célébré cet exploit national. Les infrastructures parisiennes, bien que critiquées avant l’événement, ont tenu bon, bien que des débats persistent sur leur coût exorbitant estimé à plus de 9 milliards d’euros. Les organisateurs promettent une analyse approfondie pour les futurs JO." \
+-F "categories=1" \
+-F "media=@/home/massina/Images/Undtitled.jpeg"
+
+curl -X POST http://localhost/luXew/backend/public/articles/creer \
+-H "Authorization: Bearer $jwt" \
+-F "titre=Canicule 2025 : L’Europe face à une vague de chaleur inédite" \
+-F "contenu=Depuis le début du mois de juillet 2025, une vague de chaleur exceptionnelle frappe l’Europe, avec des températures dépassant les 40°C dans plusieurs régions, notamment en France, en Espagne et en Italie. Selon Météo-France, cette canicule, la plus intense depuis 2003, est aggravée par le changement climatique, avec des records battus à Paris (42,6°C) et Barcelone (44°C). Les autorités ont activé des plans d’urgence, fermant des écoles et distribuant des points d’eau gratuits. Les agriculteurs, notamment dans le sud de la France, signalent des pertes importantes dans les cultures de céréales et de vignes. Les experts appellent à une accélération des politiques environnementales, tandis que des manifestations écologistes se multiplient à Bruxelles. Une légère baisse des températures est prévue d’ici la fin de la semaine, mais les risques pour la santé publique restent élevés." \
+-F "categories=4" \
+-F "media=@/home/massina/Images/Untitled.jpeg"
+
+curl -X POST http://localhost/luXew/backend/public/articles/creer \
+-H "Authorization: Bearer $jwt" \
+-F "titre=Nouveau gouvernement : Un remaniement audacieux sous Macron" \
+-F "contenu=Le président Emmanuel Macron a dévoilé ce mardi 15 juillet 2025 un nouveau gouvernement marqué par un remaniement audacieux, visant à relancer sa deuxième mandature après des mois de tensions sociales. Parmi les nominations notables, Amélie de Montchalin retrouve un poste clé au ministère de l’Écologie, tandis que Jean-Michel Blanquer, ancien ministre de l’Éducation, prend la tête des Finances. Ce remaniement intervient après la démission surprise de plusieurs ministres suite à des désaccords sur la réforme des retraites. L’opposition, notamment La France Insoumise, dénonce une équipe « déconnectée » des réalités populaires. Le Premier ministre, Gabriel Attal, a promis une politique centrée sur l’emploi et la transition écologique, avec un plan d’investissement de 50 milliards d’euros sur cinq ans. Les premières mesures devraient être annoncées d’ici fin juillet." \
+-F "categories=3" \
+-F "media=@/home/massina/Images/Untitledd.jpeg"
+
+curl -X POST http://localhost/luXew/backend/public/articles/creer \
+-H "Authorization: Bearer $jwt" \
+-F "titre=IA médicale : Une révolution dans les diagnostics en 2025" \
+-F "contenu=L’intelligence artificielle (IA) transforme radicalement le domaine médical en 2025, avec des algorithmes capables de détecter des cancers ou des maladies cardiovasculaires avec une précision dépassant celle des radiologues humains. Une étude publiée par l’INSERM montre que l’IA, utilisée dans 150 hôpitaux français, a réduit les erreurs de diagnostic de 30 % en six mois. Des startups comme DeepMind Health et des géants comme IBM Watson dominent ce marché, proposant des outils intégrés dans les scanners et IRM. Cependant, des inquiétudes émergent sur la confidentialité des données patients et la dépendance technologique. Le gouvernement français a lancé un fonds de 200 millions d’euros pour former le personnel médical à ces nouvelles technologies, avec un objectif de généralisation d’ici 2030." \
+-F "categories=4" \
+-F "media=@/home/massina/Images/Undtitled.jpeg"
+
+curl -X POST http://localhost/luXew/backend/public/articles/creer \
+-H "Authorization: Bearer $jwt" \
+-F "titre=Croissance économique : La France rebondit en 2025" \
+-F "contenu=Après une année 2024 marquée par une stagnation, l’économie française affiche une croissance de 1,8 % au premier semestre 2025, selon l’INSEE. Ce rebond est porté par une hausse des exportations, notamment dans l’aéronautique et le luxe, ainsi que par des investissements massifs dans les énergies renouvelables. Le secteur automobile, avec la transition vers l’électrique, a créé 15 000 emplois nets. Cependant, l’inflation reste un défi, avec une augmentation de 2,5 % des prix à la consommation, affectant le pouvoir d’achat des ménages. Le gouvernement table sur une baisse des taux d’intérêt de la BCE pour stimuler davantage la consommation. Des experts estiment que cette croissance pourrait atteindre 2,2 % d’ici fin 2025 si les tensions géopolitiques restent maîtrisées." \
+-F "categories=5" \
+-F "media=@/home/massina/Images/Untitled.jpeg"

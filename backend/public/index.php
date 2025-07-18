@@ -1,5 +1,5 @@
 <?php
-require_once '../vendor/autoload.php';
+require_once '../vendor/autoload.php'; 
 require_once '../controleurs/ControleurArticle.php';
 require_once '../controleurs/ControleurCategorie.php';
 require_once '../controleurs/ControleurCommentaire.php';
@@ -8,21 +8,34 @@ require_once '../controleurs/ControleurReaction.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-use Dotenv\Dotenv;
+use Dotenv\Dotenv; 
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..'); 
 $dotenv->load();
 
 // Récupérer la clé JWT
-$jwtSecret = $_ENV['JWT_SECRET'];
+$jwtSecret = $_ENV['JWT_SECRET'] ?? null;
+if (!$jwtSecret) {
+    throw new Exception('JWT_SECRET non défini dans .env');
+}
+
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+// Autoriser les requêtes CORS
+header('Access-Control-Allow-Origin: http://localhost:5173');
+header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
+
+// Répondre aux requêtes préflight OPTIONS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204); // No Content
+    exit();
+}
+
 
 $requete = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $methode = $_SERVER['REQUEST_METHOD'];
@@ -40,6 +53,14 @@ function validerJWT($jwtSecret) {
         throw new Exception('Jeton JWT invalide: ' . $e->getMessage());
     }
 }
+// $jwt = validerJWT($jwtSecret);
+// $_SERVER['utilisateurId'] = $jwt->utilisateurId ?? null;
+// $_SERVER['roles'] = $jwt->roles ?? null;
+
+// // Logger dans les logs du serveur
+// error_log("utilisateurId : " . var_export($_SERVER['utilisateurId'], true));
+// error_log("roles : " . var_export($_SERVER['roles'], true));
+
 
 try {
     $controleurArticle = new ControleurArticle();
@@ -65,6 +86,8 @@ try {
         $controleurCommentaire->obtenirCommentaires($matches[1]);
     } elseif (preg_match('#^/luXew/backend/public/reactions/article/(\d+)/?$#', $requete, $matches) && $methode === 'GET') {
         $controleurReaction->obtenirStatistiquesReactions($matches[1], null);
+    } elseif (preg_match('#^/luXew/backend/public/roles/?$#', $requete) && $methode === 'GET') {
+        $controleurAuthentification->listerRoles();
     } elseif (preg_match('#^/luXew/backend/public/reactions/commentaire/(\d+)/?$#', $requete, $matches) && $methode === 'GET') {
         $controleurReaction->obtenirStatistiquesReactions(null, $matches[1]);
     } else {
@@ -72,6 +95,7 @@ try {
         $jwt = validerJWT($jwtSecret);
         $_SERVER['utilisateurId'] = $jwt->utilisateurId;
         $_SERVER['roles'] = $jwt->roles;
+        
 
         switch (true) {
             // Articles
@@ -114,8 +138,8 @@ try {
             case preg_match('#^/luXew/backend/public/categories/creer/?$#', $requete) && $methode === 'POST':
                 $controleurCategorie->creerCategorie();
                 break;
-            case preg_match('#^/luXew/backend/public/categories/(\d+)/modifier/?$#', $requete, $matches) && $methode === 'POST':
-                $controleurCategorie->modifierCategorie($matches[1]);
+            case preg_match('#^/luXew/backend/public/categories/modifier/?$#', $requete, $matches) && $methode === 'POST':
+                $controleurCategorie->modifierCategorie();
                 break;
             case preg_match('#^/luXew/backend/public/categories/(\d+)/supprimer/?$#', $requete, $matches) && $methode === 'DELETE':
                 $controleurCategorie->supprimerCategorie($matches[1]);
@@ -139,6 +163,7 @@ try {
             case preg_match('#^/luXew/backend/public/utilisateurs/?$#', $requete) && $methode === 'GET':
                 $controleurAuthentification->listerUtilisateurs();
                 break;
+            
             case preg_match('#^/luXew/backend/public/utilisateurs/creer/?$#', $requete) && $methode === 'POST':
                 $controleurAuthentification->ajouterUtilisateur();
                 break;

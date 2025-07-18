@@ -10,17 +10,18 @@ class EcranGestionUtilisateurs(ttk.Frame):
         self.master = master
         self.token = token
         self.serviceSoap = serviceSoap
+        self.roles = []
         self.pack(fill='both', expand=True, padx=20, pady=20)
         self.creerInterface()
+        self.chargerRoles()
         self.listerUtilisateurs()
 
     def creerInterface(self):
         # Titre principal
-        titre = ttk.Label(self, text="Gestion des Utilisateurs", style='Header.TLabel')
-        titre.pack(pady=10)
+        ttk.Label(self, text="Gestion des Utilisateurs", style='Header.TLabel').pack(pady=10)
 
         # Treeview pour la liste des utilisateurs
-        colonnes = ("id", "pseudo", "email")
+        colonnes = ("id", "pseudo", "email", "roles")
         self.treeUtilisateurs = ttk.Treeview(self, columns=colonnes, show="headings", height=10)
         for col in colonnes:
             self.treeUtilisateurs.heading(col, text=col.capitalize())
@@ -56,7 +57,12 @@ class EcranGestionUtilisateurs(ttk.Frame):
         self.champMotDePasseAjout = ttk.Entry(cadreAjout, show="*", width=30)
         self.champMotDePasseAjout.grid(row=2, column=1, padx=5, pady=2)
 
-        ttk.Button(cadreAjout, text="Ajouter", command=self.ajouterUtilisateur).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Label(cadreAjout, text="Rôle:").grid(row=3, column=0, sticky="w", padx=5, pady=2)
+        self.comboRoleAjout = ttk.Combobox(cadreAjout, values=self.roles, state="readonly", width=27)
+        self.comboRoleAjout.grid(row=3, column=1, padx=5, pady=2)
+        self.comboRoleAjout.set("visiteur")  # Default role
+
+        ttk.Button(cadreAjout, text="Ajouter", command=self.ajouterUtilisateur).grid(row=4, column=0, columnspan=2, pady=10)
 
         # Cadre modification
         cadreModif = ttk.LabelFrame(self, text="Modifier un Utilisateur", padding=10)
@@ -74,7 +80,11 @@ class EcranGestionUtilisateurs(ttk.Frame):
         self.champEmailModif = ttk.Entry(cadreModif, width=30)
         self.champEmailModif.grid(row=2, column=1, padx=5, pady=2)
 
-        ttk.Button(cadreModif, text="Modifier", command=self.modifierUtilisateur).grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Label(cadreModif, text="Nouveau Rôle:").grid(row=3, column=0, sticky="w", padx=5, pady=2)
+        self.comboRoleModif = ttk.Combobox(cadreModif, values=self.roles, state="readonly", width=27)
+        self.comboRoleModif.grid(row=3, column=1, padx=5, pady=2)
+
+        ttk.Button(cadreModif, text="Modifier", command=self.modifierUtilisateur).grid(row=4, column=0, columnspan=2, pady=10)
 
         # Cadre suppression
         cadreSupp = ttk.LabelFrame(self, text="Supprimer un Utilisateur", padding=10)
@@ -89,19 +99,30 @@ class EcranGestionUtilisateurs(ttk.Frame):
         # Bouton de déconnexion
         ttk.Button(self, text="Déconnexion", command=self.deconnecter).pack(pady=10)
 
+    def chargerRoles(self):
+        try:
+            self.roles = self.serviceSoap.listerRoles(self.token)
+            self.comboRoleAjout['values'] = self.roles
+            self.comboRoleModif['values'] = self.roles
+            if self.roles:
+                self.comboRoleAjout.set(self.roles[0] if 'visiteur' not in self.roles else 'visiteur')
+        except Exception as e:
+            gerer_exception(e, self.master)
+            self.roles = ['visiteur']  
+
     def listerUtilisateurs(self):
         try:
             utilisateurs = self.serviceSoap.listerUtilisateurs(self.token)
-            # Vider la liste actuelle
             for item in self.treeUtilisateurs.get_children():
                 self.treeUtilisateurs.delete(item)
             
-            # Ajouter les nouveaux utilisateurs
             for u in utilisateurs:
+                roles = ", ".join(u.roles.item) if hasattr(u.roles, 'item') and u.roles.item else "Aucun"
                 self.treeUtilisateurs.insert("", "end", values=(
                     getattr(u, "id", "N/A"),
                     getattr(u, "pseudo", "N/A"),
-                    getattr(u, "email", "N/A")
+                    getattr(u, "email", "N/A"),
+                    roles
                 ))
         except Exception as e:
             gerer_exception(e, self.master)
@@ -110,19 +131,20 @@ class EcranGestionUtilisateurs(ttk.Frame):
         pseudo = self.champPseudoAjout.get().strip()
         email = self.champEmailAjout.get().strip()
         motDePasse = self.champMotDePasseAjout.get().strip()
+        role = self.comboRoleAjout.get().strip()
 
-        if not pseudo or not email or not motDePasse:
+        if not pseudo or not email or not motDePasse or not role:
             afficherErreur("Erreur", "Veuillez remplir tous les champs pour l'ajout.")
             return
 
         try:
-            reponse = self.serviceSoap.ajouterUtilisateur(self.token, pseudo, email, motDePasse)
+            reponse = self.serviceSoap.ajouterUtilisateur(self.token, pseudo, email, motDePasse, role)
             if getattr(reponse, "succes", False):
                 afficherInfo("Succès", f"Utilisateur ajouté (ID: {getattr(reponse, 'utilisateurId', 'N/A')})")
-                # Vider les champs
                 self.champPseudoAjout.delete(0, "end")
                 self.champEmailAjout.delete(0, "end")
                 self.champMotDePasseAjout.delete(0, "end")
+                self.comboRoleAjout.set(self.roles[0] if 'visiteur' not in self.roles else 'visiteur')
                 self.listerUtilisateurs()
             else:
                 afficherErreur("Erreur", getattr(reponse, "message", "Erreur lors de l'ajout."))
@@ -133,22 +155,23 @@ class EcranGestionUtilisateurs(ttk.Frame):
         idUtilisateur = self.champIdModif.get().strip()
         nouveauPseudo = self.champPseudoModif.get().strip()
         nouvelEmail = self.champEmailModif.get().strip()
+        nouveauRole = self.comboRoleModif.get().strip()
 
         if not idUtilisateur:
             afficherErreur("Erreur", "Veuillez entrer l'ID utilisateur à modifier.")
             return
-        if not nouveauPseudo and not nouvelEmail:
+        if not nouveauPseudo and not nouvelEmail and not nouveauRole:
             afficherErreur("Erreur", "Veuillez remplir au moins un champ à modifier.")
             return
 
         try:
-            reponse = self.serviceSoap.modifierUtilisateur(self.token, idUtilisateur, nouveauPseudo, nouvelEmail)
+            reponse = self.serviceSoap.modifierUtilisateur(self.token, idUtilisateur, nouveauPseudo, nouvelEmail, nouveauRole)
             if getattr(reponse, "succes", False):
                 afficherInfo("Succès", "Utilisateur modifié avec succès.")
-                # Vider les champs
                 self.champIdModif.delete(0, "end")
                 self.champPseudoModif.delete(0, "end")
                 self.champEmailModif.delete(0, "end")
+                self.comboRoleModif.set("")
                 self.listerUtilisateurs()
             else:
                 afficherErreur("Erreur", getattr(reponse, "message", "Erreur lors de la modification."))
@@ -176,17 +199,12 @@ class EcranGestionUtilisateurs(ttk.Frame):
             gerer_exception(e, self.master)
 
     def deconnecter(self):
-        """Retourne à l'écran de connexion"""
         try:
-            # Nettoyer le token
             if hasattr(self.master, 'token'):
                 self.master.token = None
-            
-            # Appeler la méthode de déconnexion du service si elle existe
             if hasattr(self.serviceSoap, 'deconnecter'):
                 self.serviceSoap.deconnecter()
             
-            # Trouver la fenêtre racine qui contient la méthode afficher_ecran
             widget = self.master
             while widget and not hasattr(widget, 'afficher_ecran'):
                 widget = widget.master
@@ -194,12 +212,9 @@ class EcranGestionUtilisateurs(ttk.Frame):
             if widget and hasattr(widget, 'afficher_ecran'):
                 widget.afficher_ecran(EcranConnexion)
             else:
-                # Fallback: détruire la fenêtre actuelle et créer une nouvelle
                 self.master.destroy()
-                # Vous devrez adapter cette partie selon votre architecture
                 print("Déconnexion effectuée - veuillez redémarrer l'application")
                 
         except Exception as e:
             print(f"Erreur lors de la déconnexion: {e}")
-            # En cas d'erreur, au moins nettoyer et fermer
             self.master.destroy()

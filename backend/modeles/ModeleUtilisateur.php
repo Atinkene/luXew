@@ -34,6 +34,19 @@ class ModeleUtilisateur {
         }
     }
 
+    public function obtenirUtilisateurParEmail($email) {
+        try {
+            $query = "SELECT * FROM Utilisateur WHERE email = :email";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':email', $email, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: false; // Return false if no user found
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
     public function obtenirTousUtilisateurs() {
         try {
             $query = "SELECT id, pseudo, email FROM Utilisateur";
@@ -44,6 +57,7 @@ class ModeleUtilisateur {
             throw new Exception("Erreur lors de la récupération des utilisateurs : " . $e->getMessage());
         }
     }
+    
 
     public function obtenirRolesUtilisateur($utilisateurId) {
         try {
@@ -75,10 +89,6 @@ class ModeleUtilisateur {
     }
 
     public function assignerRole($utilisateurId, $roleNom) {
-        return $this->ajouterRoleUtilisateur($utilisateurId, $roleNom);
-    }
-
-    public function ajouterRoleUtilisateur($utilisateurId, $roleNom) {
         try {
             $query = "INSERT INTO UtilisateurRole (utilisateurId, roleId) 
                       SELECT :utilisateurId, id FROM Role WHERE nom = :roleNom";
@@ -89,7 +99,25 @@ class ModeleUtilisateur {
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de l'ajout du rôle : " . $e->getMessage());
         }
+        
     }
+
+    public function modifierRoleUtilisateur($utilisateurId, $roleNom) {
+        try {
+            $query = "UPDATE UtilisateurRole 
+                      SET roleId = (SELECT id FROM Role WHERE nom = :roleNom) 
+                      WHERE utilisateurId = :utilisateurId";
+                      
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':roleNom', $roleNom, PDO::PARAM_STR);
+            $stmt->bindParam(':utilisateurId', $utilisateurId, PDO::PARAM_INT);
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la modification du rôle de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
 
     public function modifierUtilisateur($utilisateurId, $pseudo, $email) {
         try {
@@ -101,6 +129,17 @@ class ModeleUtilisateur {
             return $stmt->execute();
         } catch (PDOException $e) {
             throw new Exception("Erreur lors de la modification de l'utilisateur : " . $e->getMessage());
+        }
+    }
+
+    public function obtenirRoles() {
+        try {
+            $query = "SELECT nom FROM Role";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'nom');
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la récupération des rôles : " . $e->getMessage());
         }
     }
 

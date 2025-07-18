@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ServicesSoap"
+             targetNamespace="http://localhost/luXew/backend/public/soap"
+             xmlns:tns="http://localhost/luXew/backend/public/soap"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <types>
+    <xsd:schema targetNamespace="http://localhost/luXew/backend/public/soap">
+      
+      <xsd:element name="authentifierUtilisateur">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="pseudo" type="xsd:string"/>
+            <xsd:element name="motDePasse" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="authentifierUtilisateurResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="succes" type="xsd:boolean"/>
+            <xsd:element name="jeton" type="xsd:string"/>
+            <xsd:element name="message" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <!-- Nouveau: Lister les rôles disponibles -->
+      <xsd:element name="listerRoles">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="jeton" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:complexType name="RolesArray">
+        <xsd:sequence>
+          <xsd:element name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+
+      <xsd:element name="listerRolesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="roles" type="tns:RolesArray"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="listerUtilisateurs">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="jeton" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <!-- Structure mise à jour d'un utilisateur avec rôles -->
+      <xsd:complexType name="Utilisateur">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:int"/>
+          <xsd:element name="pseudo" type="xsd:string"/>
+          <xsd:element name="email" type="xsd:string"/>
+          <xsd:element name="roles" type="tns:RolesArray"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      
+      <!-- Tableau d'utilisateurs -->
+      <xsd:complexType name="UtilisateursArray">
+        <xsd:sequence>
+          <xsd:element name="item" type="tns:Utilisateur" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      
+      <!-- Réponse -->
+      <xsd:element name="listerUtilisateursResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="utilisateurs" type="tns:UtilisateursArray"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="ajouterUtilisateur">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="jeton" type="xsd:string"/>
+            <xsd:element name="pseudo" type="xsd:string"/>
+            <xsd:element name="email" type="xsd:string"/>
+            <xsd:element name="motDePasse" type="xsd:string"/>
+            <xsd:element name="role" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="ajouterUtilisateurResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="succes" type="xsd:boolean"/>
+            <xsd:element name="utilisateurId" type="xsd:int"/>
+            <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="modifierUtilisateur">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="jeton" type="xsd:string"/>
+            <xsd:element name="id" type="xsd:int"/>
+            <xsd:element name="pseudo" type="xsd:string"/>
+            <xsd:element name="email" type="xsd:string"/>
+            <xsd:element name="role" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="modifierUtilisateurResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="succes" type="xsd:boolean"/>
+            <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="supprimerUtilisateur">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="jeton" type="xsd:string"/>
+            <xsd:element name="id" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="supprimerUtilisateurResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="succes" type="xsd:boolean"/>
+            <xsd:element name="message" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:schema>
+  </types>
+
+  <message name="authentifierUtilisateurRequest">
+    <part name="parameters" element="tns:authentifierUtilisateur"/>
+  </message>
+  <message name="authentifierUtilisateurResponse">
+    <part name="parameters" element="tns:authentifierUtilisateurResponse"/>
+  </message>
+
+  <message name="listerRolesRequest">
+    <part name="parameters" element="tns:listerRoles"/>
+  </message>
+  <message name="listerRolesResponse">
+    <part name="parameters" element="tns:listerRolesResponse"/>
+  </message>
+
+  <message name="listerUtilisateursRequest">
+    <part name="parameters" element="tns:listerUtilisateurs"/>
+  </message>
+  <message name="listerUtilisateursResponse">
+    <part name="parameters" element="tns:listerUtilisateursResponse"/>
+  </message>
+
+  <message name="ajouterUtilisateurRequest">
+    <part name="parameters" element="tns:ajouterUtilisateur"/>
+  </message>
+  <message name="ajouterUtilisateurResponse">
+    <part name="parameters" element="tns:ajouterUtilisateurResponse"/>
+  </message>
+
+  <message name="modifierUtilisateurRequest">
+    <part name="parameters" element="tns:modifierUtilisateur"/>
+  </message>
+  <message name="modifierUtilisateurResponse">
+    <part name="parameters" element="tns:modifierUtilisateurResponse"/>
+  </message>
+
+  <message name="supprimerUtilisateurRequest">
+    <part name="parameters" element="tns:supprimerUtilisateur"/>
+  </message>
+  <message name="supprimerUtilisateurResponse">
+    <part name="parameters" element="tns:supprimerUtilisateurResponse"/>
+  </message>
+
+  <portType name="ServicesSoapPortType">
+    <operation name="authentifierUtilisateur">
+      <input message="tns:authentifierUtilisateurRequest"/>
+      <output message="tns:authentifierUtilisateurResponse"/>
+    </operation>
+    <operation name="listerRoles">
+      <input message="tns:listerRolesRequest"/>
+      <output message="tns:listerRolesResponse"/>
+    </operation>
+    <operation name="listerUtilisateurs">
+      <input message="tns:listerUtilisateursRequest"/>
+      <output message="tns:listerUtilisateursResponse"/>
+    </operation>
+    <operation name="ajouterUtilisateur">
+      <input message="tns:ajouterUtilisateurRequest"/>
+      <output message="tns:ajouterUtilisateurResponse"/>
+    </operation>
+    <operation name="modifierUtilisateur">
+      <input message="tns:modifierUtilisateurRequest"/>
+      <output message="tns:modifierUtilisateurResponse"/>
+    </operation>
+    <operation name="supprimerUtilisateur">
+      <input message="tns:supprimerUtilisateurRequest"/>
+      <output message="tns:supprimerUtilisateurResponse"/>
+    </operation>
+  </portType>
+
+  <binding name="ServicesSoapBinding" type="tns:ServicesSoapPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="authentifierUtilisateur">
+      <soap:operation soapAction="authentifierUtilisateur"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="listerRoles">
+      <soap:operation soapAction="listerRoles"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="listerUtilisateurs">
+      <soap:operation soapAction="listerUtilisateurs"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="ajouterUtilisateur">
+      <soap:operation soapAction="ajouterUtilisateur"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="modifierUtilisateur">
+      <soap:operation soapAction="modifierUtilisateur"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="supprimerUtilisateur">
+      <soap:operation soapAction="supprimerUtilisateur"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+
+  <service name="ServicesSoap">
+    <port name="ServicesSoapPort" binding="tns:ServicesSoapBinding">
+      <soap:address location="http://localhost/luXew/backend/public/soap.php"/>
+    </port>
+  </service>
+
+</definitions>

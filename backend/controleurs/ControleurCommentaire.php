@@ -34,27 +34,33 @@ class ControleurCommentaire {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new Exception('Méthode non autorisée');
             }
-            $contenu = filter_input(INPUT_POST, 'contenu', FILTER_SANITIZE_SPECIAL_CHARS);
-            $articleId = filter_input(INPUT_POST, 'articleId', FILTER_VALIDATE_INT);
-            $parentId = filter_input(INPUT_POST, 'parentId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) ?: null;
-
+        
+            // Accepte les données JSON envoyées par Axios
+            $contenuJson = file_get_contents("php://input");
+            $donneesJson = json_decode($contenuJson, true);
+        
+            $contenu = $donneesJson['contenu'] ?? null;
+            $articleId = $donneesJson['articleId'] ?? null;
+            $parentId = $donneesJson['parentId'] ?? null;
+        
             if (empty($contenu) || !$articleId) {
                 throw new Exception('Contenu ou ID d\'article manquant');
             }
-
+        
             $donnees = [
                 'contenu' => $contenu,
                 'utilisateurId' => $_SERVER['utilisateurId'],
                 'articleId' => $articleId,
                 'parentId' => $parentId
             ];
-
+        
             $commentaireId = $this->modeleCommentaire->ajouterCommentaire($donnees);
             $this->repondreJson(['succes' => true, 'commentaireId' => $commentaireId]);
         } catch (Exception $e) {
             $this->repondreJson(['erreur' => $e->getMessage()], 400);
         }
     }
+
 
     public function modifierCommentaire($commentaireId) {
         try {
