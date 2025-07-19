@@ -75,7 +75,7 @@ backend/
 1. **Cloner le projet** :
 
    ```bash
-   git clone https://github.com/votre-repo/luXew.git
+   git clone https://github.com/Atinkene/luXew.git
    cd luXew/backend
    ```
 
