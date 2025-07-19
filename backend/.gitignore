@@ -1,0 +1,30 @@
+# Fichiers sensibles
+.env
+.env.local
+
+# Dépendances
+/vendor/
+
+# Fichiers de cache
+*.log
+*.cache
+*.tmp
+
+# IDE / éditeurs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# Sauvegardes
+*.bak
+*.old
+*.swp
+*~
+
+# Fichiers d'upload temporaire
+uploads/tmp/
